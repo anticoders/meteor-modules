@@ -9,7 +9,7 @@ moduleManager = new AMDManager({
     if (object.ajax === undefined) { // make sure we do it only once
       object.ajax = true;
       $.ajax({
-        url  : Router.path('modules', object),
+        url  : '/modules/' + object.name,
         type : 'GET', dataType : 'script',
       }).done(function (message) {});
     }

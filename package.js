@@ -12,7 +12,7 @@ Package._transitional_registerBuildPlugin({
 
 Package._transitional_registerBuildPlugin({
   name: 'compileTemplatesForModules',
-  use: [ 'handlebars' ],
+  use: [ 'spacebars-compiler' ],
   sources: [
     'plugins/template/html_scanner.js', // this is copy/pasted from meteor
     'plugins/template/templatePlugin.js',
@@ -20,16 +20,12 @@ Package._transitional_registerBuildPlugin({
 });
 
 Package.on_use(function (api) {
-  api.use(['deps', 'underscore', 'handlebars', 'iron-router'], ['client', 'server']);
+  api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);
 
   api.add_files([
     'manager.js',
     'require.js',
   ]);
-
-  api.add_files([
-    'routes.js',
-  ], 'client');
 
   api.add_files([
     'fileServer.js'

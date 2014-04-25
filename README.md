@@ -27,7 +27,7 @@ meteorApp
       file4.module_html
 ```
 
-Note that due to the way the meteor bundler works, the extensions of your module files need to be changed to `.module_js` and `.module_html` (`.module_css` is not suported for the moment). To download and execute the module code on the client, use
+Note that due to the way the meteor bundler works, the extensions of your module files need to be changed to `.module.js` and `.module.html` (`.module.css` is not suported for the moment). To download and execute the module code on the client, use
 
 ```javascript
 require('module1', function () {

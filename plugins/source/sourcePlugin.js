@@ -1,5 +1,5 @@
 
-Plugin.registerSourceHandler("module_js", function (compileStep) {
+Plugin.registerSourceHandler("module.js", function (compileStep) {
 
   var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
 

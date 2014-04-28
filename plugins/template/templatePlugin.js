@@ -1,5 +1,5 @@
 
-Plugin.registerSourceHandler("module_html", function (compileStep) {
+Plugin.registerSourceHandler("amd.html", function (compileStep) {
   if (compileStep.arch.match(/^browser(\.|$)/))
     return;
 

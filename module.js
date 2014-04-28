@@ -34,7 +34,7 @@ var registerModule = function (moduleName) {
   });
 };
 
-Module = function (moduleName) {
+module = function (moduleName) {
 
   if (!_.has(modules, moduleName)) {
     registerModule(moduleName);
@@ -79,6 +79,14 @@ Module = function (moduleName) {
   // to prevent module from further modifications
   moduleAPI.extend = function (factory) {
     module.addToRecipies(factory);
+  };
+
+  moduleAPI.depend = function () {
+    return {
+      extend: function () {
+
+      }
+    };
   };
   
   return moduleAPI;

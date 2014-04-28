@@ -25,6 +25,8 @@ Package.on_use(function (api) {
   api.add_files([
     'manager.js',
     'require.js',
+    'i18n.js',
+    'module.js',
   ]);
 
   api.add_files([
@@ -33,4 +35,5 @@ Package.on_use(function (api) {
 
   api.export('require');
   api.export('define');
+  api.export('module');
 });

@@ -72,6 +72,7 @@ Module = function (moduleName, widgetName) {
 
     settings = settings || {};
     settings.__module__ = moduleName;
+    settings.__name__ = instanceName;
 
     instance = {};
 

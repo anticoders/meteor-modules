@@ -127,6 +127,10 @@ Module = function (moduleName, widgetName) {
 
   };
 
+  moduleAPI.addTemplate = function (templateName, renderFunc) {
+    
+  };
+
   moduleAPI.widget = function (widgetName) {
     var widgetAPI = widgetAPIs[widgetName];
     var factories = widgetFactories[widgetName];

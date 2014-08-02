@@ -66,7 +66,7 @@ Plugin.registerSourceHandler("module.html", function (compileStep) {
     compileStep.addJavaScript({
       path       : compileStep.inputPath,
       sourcePath : compileStep.inputPath,
-      data       : 'define("' + compileStep.inputPath + '", [], function () {\n' + results.js + '\n});',
+      data       : results.js,
     });
   }
 });

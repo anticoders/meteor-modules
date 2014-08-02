@@ -19,13 +19,52 @@ var camel = function (name) {
   });
 }
 
+function parseModuleOptions(compileStep) {
+  var parts, index, regExp = new RegExp('\\.module\\' + path.extname(compileStep.inputPath) + '$');
+
+  var options = {
+    path: compileStep.inputPath
+  };
+
+  if (compileStep.fileOptions.module) {
+    options.module = compileStep.fileOptions.module;
+  }
+
+  if (compileStep.fileOptions.layer) {
+    options.layer = compileStep.fileOptions.layer;
+  }
+
+  if (!options.module && compileStep.packageName) {
+    options.module = compileStep.packageName;
+  }
+
+  if (!options.module) {
+    parts = compileStep.inputPath.split(path.sep);
+    index = _.indexOf(parts, 'modules');
+    if (index < 0 || index === parts.length - 1) {
+      options.module = parts[parts.length - 1].replace(regExp, '');
+    } else {
+      options.module = parts[index + 1].replace(regExp, '');
+    }
+  }
+
+  if (!options.layer) {
+    parts = compileStep.inputPath.split(path.sep);
+    index = _.indexOf(parts, 'layers');
+    if (index >= 0 && index < parts.length - 1) {
+      options.layer = parts[index + 1].replace(regExp, '');
+    }
+  }
+
+  return options;
+}
+
 Plugin.registerSourceHandler(moduleExt, function (compileStep) {
 
-  console.log('COMPILE STEP');
-  console.log(compileStep);
+  console.log(parseModuleOptions(compileStep));
 
   if (compileStep.packageName) {
-    
+
   }
 
   var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);

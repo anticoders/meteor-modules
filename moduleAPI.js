@@ -19,8 +19,8 @@ var registerModule = function (moduleName) {
     factories : [],
     i18n      : i18n.namespace(),
 
-    require   : _.bind(manager.require , manager),
-    define    : _.bind(manager.define  , manager),
+    require   : wrapRequire(manager),
+    define    : wrapDefine(manager),
 
     addToRecipies: function (factory) {
       var listOfNames = _.keys(module.instances);
@@ -116,12 +116,11 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.define = function () {
-    return module.define.apply(this, arguments);
+    module.define.apply(null, arguments);
   };
 
   moduleAPI.require = function () {
-    // TODO: implement different variants of require
-    return module.require.apply(this, arguments);
+    return module.require.apply(null, arguments);
   };
 
   moduleAPI.lazy = function () {

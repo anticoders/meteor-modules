@@ -8,6 +8,11 @@ Package.on_use(function (api) {
   
   api.add_files([
 
+
+  ])
+
+  api.add_files([
+
     // LAYERS
 
     'layers/layer1.module.js',
@@ -15,7 +20,7 @@ Package.on_use(function (api) {
 
     // CONFIG
 
-    'my.module.js',
+    'configure.module.js',
 
   ], ['client', 'server'], { });
 

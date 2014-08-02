@@ -1,19 +1,35 @@
 
 var path = Npm.require('path');
-var moduleExt = 'module.js';
 
-var parseModuleName = function (relPath) {
-  var parts = relPath.split(path.sep);
-  var index = _.indexOf(parts, 'modules');
-  if (index < 0 || index === parts.length - 1) {
-    name = parts[parts.length - 1];
-  } else {
-    name = parts[index+1];
+Plugin.registerSourceHandler('module.js', function (compileStep) {
+
+  var options = parseModuleOptions(compileStep);
+
+  if (!options.module) {
+    throw Error('Cannot figure out module name for ' + compileStep.inputPath);
   }
-  return name.slice(0, name.length - (moduleExt.length + 1));
-};
 
-var camel = function (name) {
+  var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
+  var contents = compileStep.read().toString('utf8');
+
+  if (!options.layer) {
+    contents = "\n\nModule('" + options.module + "').extend(function (" + toCamelCase(options.module) + ", settings, i18n, require) {\n\n" +
+      contents + "\n\n" +
+    "});\n";
+  } else {
+    // TODO: lazy loading
+    return;
+  }
+
+  compileStep.addJavaScript({
+    path       : compileStep.inputPath, // what is this for?
+    sourcePath : compileStep.inputPath,
+    data       : contents
+  });
+
+});
+
+function toCamelCase(name) {
   return name.replace(/(^|[^a-zA-Z])[a-z]/g, function (match) {
     return match[match.length - 1].toUpperCase();
   });
@@ -58,35 +74,3 @@ function parseModuleOptions(compileStep) {
 
   return options;
 }
-
-Plugin.registerSourceHandler(moduleExt, function (compileStep) {
-
-  console.log(parseModuleOptions(compileStep));
-
-  if (compileStep.packageName) {
-
-  }
-
-  var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
-
-  if (!weAreOnTheServer)
-    return;
-
-  var contents = compileStep.read().toString('utf8');
-
-  // XXX we could do better than this
-  var name = parseModuleName(compileStep.inputPath);
-
-  //contents = 'define("' + compileStep.inputPath + '", [], function () {\n' + contents + '\n});';
-
-  contents = "\n\nModule('" + name + "').extend(function (" + camel(name) + ", settings, i18n, require) {\n\n" +
-    contents + "\n\n" +
-  "});\n";
-
-  compileStep.addJavaScript({
-    path       : compileStep.inputPath, // what is this for?
-    sourcePath : compileStep.inputPath,
-    data       : contents
-  });
-
-});

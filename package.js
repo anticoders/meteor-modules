@@ -20,10 +20,9 @@ Package._transitional_registerBuildPlugin({
 });
 
 Package.on_use(function (api) {
-  api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);
+  api.use(['deps', 'underscore', 'templating', 'webapp', 'amd-manager'], ['client', 'server']);
 
   api.add_files([
-    'manager.js',
     'require.js',
     'i18n.js',
     'moduleAPI.js',

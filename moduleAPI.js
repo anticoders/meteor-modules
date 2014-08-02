@@ -3,7 +3,8 @@ var modules    = {};
 var moduleAPIs = {};
 var plugins    = {};
 
-var registerModule = function (moduleName) {
+function registerModule (moduleName) {
+
   var module;
 
   if (moduleName in modules) {
@@ -14,19 +15,17 @@ var registerModule = function (moduleName) {
 
   module = modules[moduleName] = {
     
-    settings  : {},
-    instances : {},
-    factories : [],
-    i18n      : i18n.namespace(),
-
-    require   : wrapRequire(manager),
-    define    : wrapDefine(manager),
+    instancesByName : {},
+    factories       : [],
+    i18n            : i18n.namespace(),
+    define          : wrapDefine(manager),
+    require         : wrapRequire(manager),
 
     addToRecipies: function (factory) {
-      var listOfNames = _.keys(module.instances);
+      var listOfNames = _.keys(module.instancesByName);
       module.factories.push(factory);
       _.each(listOfNames, function (name) {
-        factory.call({}, module.instances[name], module.settings[name], module.i18n, module.require);
+        applyFactory(factory, name, module);
       });
     },
   };
@@ -37,6 +36,7 @@ var registerModule = function (moduleName) {
     // for convenience
     instance.i18n = i18n;
   });
+
 };
 
 Module = function (moduleName, widgetName) {
@@ -68,21 +68,31 @@ Module = function (moduleName, widgetName) {
   
   moduleAPI.as = function (instanceName, settings) {
 
-    var instance;
+    var instance = {};
+    var manager = new AMDManager();
+    var Template = {};
+
+    Template.prototype = (function () {
+      return (function Template() {}).prototype;
+    })();
 
     settings = settings || {};
     settings.__module__ = moduleName;
     settings.__name__ = instanceName;
 
-    instance = {};
+    // remember for further use
+
+    module.instancesByName[instanceName] = {
+      instance : instance,
+      settings : settings,
+      require  : wrapRequire(manager),
+      define   : wrapDefine(manager),
+      Template : Template,
+    };
 
     _.each(module.factories, function (factory) {
-      factory.call({}, instance, settings, module.i18n, module.require);
+      applyFactory(factory, instanceName, module);
     });
-
-    // remember for further use
-    module.instances[instanceName] = instance;
-    module.settings[instanceName] = settings;
 
     return instance;
   };
@@ -128,7 +138,7 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.addTemplate = function (templateName, renderFunc) {
-    
+
   };
 
   moduleAPI.widget = function (widgetName) {
@@ -156,10 +166,6 @@ Module = function (moduleName, widgetName) {
 
     return widgetAPI;
   };
-
-  module.define('$module', [], function () {
-    return moduleAPI;
-  });
 
   Meteor.startup(function () {
 

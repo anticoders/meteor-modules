@@ -14,8 +14,7 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   var contents = compileStep.read().toString('utf8');
 
   if (!options.layer) {
-    contents = "Module('" + options.module + "').extend(function (" +
-        toCamelCase(options.module) + ", settings, i18n, require) {" + contents + "});";
+    contents = "Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
   } else {
     // TODO: lazy loading
     return;
@@ -70,12 +69,6 @@ Plugin.registerSourceHandler("module.html", function (compileStep) {
     });
   }
 });
-
-function toCamelCase(name) {
-  return name.replace(/(^|[^a-zA-Z])[a-z]/g, function (match) {
-    return match[match.length - 1].toUpperCase();
-  });
-}
 
 function parseModuleOptions(compileStep) {
   var parts, index, regExp = new RegExp('\\.module\\' + path.extname(compileStep.inputPath) + '$');

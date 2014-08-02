@@ -30,12 +30,20 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
 });
 
 Plugin.registerSourceHandler("module.html", function (compileStep) {
-  if (compileStep.arch.match(/^browser(\.|$)/))
-    return;
+  //if (compileStep.arch.match(/^browser(\.|$)/))
+  //  return;
+
+  var options = parseModuleOptions(compileStep);
+
+  if (!options.module) {
+    // TODO: use compileStep.error instead of throwing excpetion
+    throw Error('Cannot figure out module name for ' + compileStep.inputPath);
+  }
 
   var contents = compileStep.read().toString('utf8');
+
   try {
-    var results = html_scanner.scan(contents, compileStep.inputPath);
+    var results = html_scanner.scan(contents, compileStep.inputPath, options);
   } catch (e) {
     if (e instanceof html_scanner.ParseError) {
       compileStep.error({
@@ -52,6 +60,9 @@ Plugin.registerSourceHandler("module.html", function (compileStep) {
 
   if (results.js) {
 
+    console.log(results.js);
+
+  
     compileStep.addJavaScript({
       path       : compileStep.inputPath,
       sourcePath : compileStep.inputPath,

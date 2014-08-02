@@ -179,8 +179,8 @@ html_scanner = {
 
         options = options || {};
         
-        results.js += "Template.__define__(" + JSON.stringify(name) +
-          ", " + renderFuncCode + ", " + JSON.stringify(options) + ");\n";
+        results.js += "Module(" + JSON.stringify(options.module) + ").addTemplate(" + JSON.stringify(name) +
+          ", " + renderFuncCode + ");\n";
         
       } else {
         // body is not suported

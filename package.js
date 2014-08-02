@@ -3,19 +3,11 @@ Package.describe({
 });
 
 Package._transitional_registerBuildPlugin({
-  name: 'compileSourceCodeForModules',
-  use: [ 'underscore' ],
+  name: 'compileImpactModules',
+  use: [ 'spacebars-compiler', 'underscore' ],
   sources: [
-    'plugins/source/sourcePlugin.js',
-  ]
-});
-
-Package._transitional_registerBuildPlugin({
-  name: 'compileTemplatesForModules',
-  use: [ 'spacebars-compiler' ],
-  sources: [
-    'plugins/template/html_scanner.js', // this is copy/pasted from meteor
-    'plugins/template/templatePlugin.js',
+    'plugin/html_scanner.js', // this is copy/pasted from meteor
+    'plugin/plugin.js',
   ]
 });
 
@@ -32,7 +24,5 @@ Package.on_use(function (api) {
     'fileServer.js'
   ], 'server');
 
-  api.export('require');
-  api.export('define');
   api.export('Module');
 });

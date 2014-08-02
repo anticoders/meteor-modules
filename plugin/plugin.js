@@ -6,6 +6,7 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   var options = parseModuleOptions(compileStep);
 
   if (!options.module) {
+    // TODO: use compileStep.error instead of throwing excpetion
     throw Error('Cannot figure out module name for ' + compileStep.inputPath);
   }
 
@@ -13,9 +14,8 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   var contents = compileStep.read().toString('utf8');
 
   if (!options.layer) {
-    contents = "\n\nModule('" + options.module + "').extend(function (" + toCamelCase(options.module) + ", settings, i18n, require) {\n\n" +
-      contents + "\n\n" +
-    "});\n";
+    contents = "Module('" + options.module + "').extend(function (" +
+        toCamelCase(options.module) + ", settings, i18n, require) {" + contents + "});";
   } else {
     // TODO: lazy loading
     return;

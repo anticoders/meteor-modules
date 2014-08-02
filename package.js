@@ -4,7 +4,7 @@ Package.describe({
 
 Package._transitional_registerBuildPlugin({
   name: 'compileSourceCodeForModules',
-  use: [],
+  use: [ 'underscore' ],
   sources: [
     'plugins/source/sourcePlugin.js',
   ]
@@ -34,5 +34,5 @@ Package.on_use(function (api) {
 
   api.export('require');
   api.export('define');
-  api.export('module');
+  api.export('Module');
 });

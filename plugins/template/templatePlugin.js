@@ -1,5 +1,5 @@
 
-Plugin.registerSourceHandler("amd.html", function (compileStep) {
+Plugin.registerSourceHandler("module.html", function (compileStep) {
   if (compileStep.arch.match(/^browser(\.|$)/))
     return;
 
@@ -21,6 +21,7 @@ Plugin.registerSourceHandler("amd.html", function (compileStep) {
   // XXX we ignore here results.head and .body
 
   if (results.js) {
+
     compileStep.addJavaScript({
       path       : compileStep.inputPath,
       sourcePath : compileStep.inputPath,

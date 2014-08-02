@@ -3,19 +3,18 @@ var modules    = {};
 var moduleAPIs = {};
 var plugins    = {};
 
-// TODO: eventually get rid of this method
-
 var registerModule = function (moduleName) {
   var module;
 
   if (moduleName in modules) {
-    throw new Error('module ' + moduleName + ' already registered');
+    throw new Error('module ' + moduleName + ' already exists');
   }
 
   var manager = new AMDManager();
 
   module = modules[moduleName] = {
     
+    globals   : [],
     settings  : {},
     instances : {},
     factories : [],
@@ -41,7 +40,7 @@ var registerModule = function (moduleName) {
   });
 };
 
-module = function (moduleName, widgetName) {
+Module = function (moduleName, widgetName) {
 
   var widgetFactories = {};
   var widgetAPIs = {};
@@ -59,6 +58,14 @@ module = function (moduleName, widgetName) {
   }
 
   moduleAPIs[moduleName] = moduleAPI = {};
+
+  moduleAPI.configure = function (options) {
+    if (_.isString(options.globals)) {
+      module.globals.push(options.globals);
+    } else if (_.isArray(options.globals)) {
+      Array.prototype.push.apply(module.globals, options.globals);
+    }
+  }
   
   moduleAPI.as = function (instanceName, settings) {
 
@@ -87,7 +94,7 @@ module = function (moduleName, widgetName) {
   // this is pretty unsafe :/
   // at least we should provide "freeze" method
   // to prevent module from further modifications
-  moduleAPI.extend = function (factory) {
+  moduleAPI.extend = function (factory, options) {
     module.addToRecipies(factory);
   };
 
@@ -174,7 +181,7 @@ module = function (moduleName, widgetName) {
   return moduleAPI;
 };
 
-module.registerPlugin = function (pluginName, deps, body) {
+Module.registerPlugin = function (pluginName, deps, body) {
   if (arguments.length === 2) {
     body = deps; deps = [];
   }

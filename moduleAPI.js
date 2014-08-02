@@ -116,11 +116,12 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.define = function () {
-
+    return module.define.apply(this, arguments);
   };
 
   moduleAPI.require = function () {
-
+    // TODO: implement different variants of require
+    return module.require.apply(this, arguments);
   };
 
   moduleAPI.lazy = function () {

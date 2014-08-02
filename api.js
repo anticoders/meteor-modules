@@ -75,7 +75,7 @@ module('mySuperModule', 'editor').extend(function (instance) {
 // we create a separate list of factories named 'editor'
 
 // in addition on the client the following code is added
-  
+
 Meteor.startup(function () {
   module('mySuperModule').lazy('editor', [ '$module' ], function ($module) {
     // how about delaying the execution until someone really needs it?

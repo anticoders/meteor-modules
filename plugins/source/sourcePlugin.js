@@ -21,6 +21,13 @@ var camel = function (name) {
 
 Plugin.registerSourceHandler(moduleExt, function (compileStep) {
 
+  console.log('COMPILE STEP');
+  console.log(compileStep);
+
+  if (compileStep.packageName) {
+    
+  }
+
   var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
 
   if (!weAreOnTheServer)

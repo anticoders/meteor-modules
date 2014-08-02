@@ -14,7 +14,6 @@ var registerModule = function (moduleName) {
 
   module = modules[moduleName] = {
     
-    globals   : [],
     settings  : {},
     instances : {},
     factories : [],

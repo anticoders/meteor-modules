@@ -104,7 +104,26 @@ $module.require = function (deps, body) {
   });
   return require(deps, body);
 }
-  
+
+// on the server side
+Module('mySuperModule').layer('dashboard').extend(function () {
+  // ...
+});
+
+// under /modules/mySuperModule/dashboard there will be the following code
+
+Module('mySuperModule').define('dashboard', function (instance) {
+
+  instance.require([ /* ... */ ], function () {
+    // ...
+  });
+
+  instance.require([ /* ... */ ], function () {
+    // ...
+  });
+
+});
+
 // on the server the factories are not executed automatically, but the response for /modules/mySuperModule/editor will be:
   
 module('mySuperModule').define('editor', [ '$module' ], function ($module) {

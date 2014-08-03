@@ -42,6 +42,11 @@ function createModule(moduleName) {
         settings : settings,
         require  : wrapRequire(manager),
         define   : wrapDefine(manager),
+
+        // we use this one for lazy loading
+        __useFactory__ : function (factory) {
+          applyFactory(factory, instance, module);
+        },
       };
 
       _.each(module.factories, function (factory) {
@@ -82,8 +87,8 @@ function createModule(moduleName) {
 
 Module = function (moduleName, widgetName) {
 
-  var widgetFactories = {};
-  var widgetAPIs = {};
+  var layerFactories = {};
+  var layerAPIs = {};
 
   if (!_.has(modules, moduleName)) {
     createModule(moduleName);
@@ -187,43 +192,57 @@ Module = function (moduleName, widgetName) {
     });
   };
 
-  moduleAPI.widget = function (widgetName) {
-    var widgetAPI = widgetAPIs[widgetName];
-    var factories = widgetFactories[widgetName];
+  moduleAPI.layer = function (layerName) {
+    var layerAPI  = layerAPIs[layerName];
+    var factories = layerFactories[layerName];
 
-    if (widgetAPI) {
-      return widgetAPI;
-    }
+    if (layerAPI) return layerAPI;
 
-    factories = widgetFactories[widgetName] = [];
-    widgetAPI = widgetAPIs[widgetName] = {
+    factories = layerFactories[layerName] = [];
+    layerAPI = layerAPIs[layerName] = {
       extend: function (factory) {
-        factories.push(factory);
-      },
+        factories.push({
+          body: factory,
+          deps: [],
+        });
+      }, // extend
       depend: function (deps) {
         return {
           extend: function (factory) {
-            factory.deps = deps;
-            factories.push(factory);
+            factories.push({
+              body: factory,
+              deps: deps,
+            });
           },
         };
-      },
+      }, // depend
     };
 
-    return widgetAPI;
+    return layerAPI;
   };
 
   Meteor.startup(function () {
 
+    var cache = {};
+
     if (Meteor.isServer) {
 
-      moduleAPI.compile = function (widgetName) {
-        return 'module(' + JSON.stringify(moduleName) + ').define(' + widgetName + ', [ "$module" ], function ($module) {\n' +
-          _.map(widgetFactories[widgetName], function (factory) {
-            return '$module.depend(' + JSON.stringify(factory.deps) +
-              ').extend(' + factory.toString() + '\n);';
-          }).join(';\n') + '\n' +
-        '});';
+      moduleAPI.compile = function (layerName) {
+        var deps;
+        if (!cache[layerName]) {
+          deps = [];
+          _.each(layerFactories[layerName], function (factory) {
+            Array.prototype.push.apply(deps, factory.deps);
+          });
+          deps = _.map(_.unique(deps), function (name) { return JSON.stringify(name); });
+          //-----------------------------------------------------------------------------------------------------------------------------------------------------------
+          cache[layerName] = 'Module(' + JSON.stringify(moduleName) + ').define(' + layerName + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n' +
+            _.map(layerFactories[layerName], function (factory) {
+              return '$instance.__useFactory__(' + factory.toString() + '\n);';
+            }).join(';\n') + '\n' +
+          '});';
+        }
+        return cache[layerName];
       };
 
     } else {

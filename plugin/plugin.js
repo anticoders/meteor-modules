@@ -16,8 +16,7 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   if (!options.layer) {
     contents = "Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
   } else {
-    // TODO: lazy loading
-    return;
+    contents = "Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
   }
 
   compileStep.addJavaScript({

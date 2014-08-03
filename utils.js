@@ -6,7 +6,11 @@ applyFactory = function (factory, instanceName, module) {
   var instance = module.instancesByName[instanceName], args = [];
 
   _.each(propertiesOfInstance, function (name) {
-    args.push(instance[name]);
+    if (name !== 'instance') {
+      args.push(instance[name]);
+    } else {
+      args.push(instance);
+    }
   });
 
   _.each(propertiesOfModule, function (name) {

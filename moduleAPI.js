@@ -70,11 +70,12 @@ Module = function (moduleName, widgetName) {
 
     var instance = {};
     var manager = new AMDManager();
-    var Template = {};
+    var _Template = function Template () {};
 
-    Template.prototype = (function () {
-      return (function Template() {}).prototype;
-    })();
+    if (Meteor.isClient) {
+      _Template.prototype = Object.create(Template.prototype);
+      _Template.prototype.constructor = _Template;
+    }
 
     settings = settings || {};
     settings.__module__ = moduleName;
@@ -83,18 +84,17 @@ Module = function (moduleName, widgetName) {
     // remember for further use
 
     module.instancesByName[instanceName] = {
-      instance : instance,
       settings : settings,
       require  : wrapRequire(manager),
       define   : wrapDefine(manager),
-      Template : Template,
+      Template : { prototype: _Template.prototype },
     };
 
     _.each(module.factories, function (factory) {
       applyFactory(factory, instanceName, module);
     });
 
-    return instance;
+    return module.instancesByName[instanceName];
   };
 
   moduleAPI.translateTo = function (language, map) {
@@ -137,8 +137,34 @@ Module = function (moduleName, widgetName) {
 
   };
 
-  moduleAPI.addTemplate = function (templateName, renderFunc) {
+  moduleAPI.addTemplate = function (templateName, templateFunc) {
+    if (!Meteor.isClient) return;
 
+    module.addToRecipies(function (instance, settings, require, define, _Template) {
+      // TODO: better error messages
+
+      if (_Template.hasOwnProperty(templateName)) {
+        if (_Template[templateName].__makeView)
+          throw new Error("There are multiple templates named '" + templateName + "'. Each template needs a unique name.");
+        throw new Error("This template name is reserved: " + templateName);
+      }
+
+      // TODO: use prefixed name
+
+      var tmpl = new _Template.prototype.constructor;
+      var templateNameWithPrefix = settings.__name__ + '_' + templateName
+
+      tmpl.__viewName     = 'Template.' + templateName;
+      tmpl.__templateName = templateNameWithPrefix;
+      tmpl.__render       = templateFunc;
+
+      // note the three methods of accessing this template
+      _Template[templateName] = tmpl;
+
+      _Template.prototype[templateName] = tmpl;
+
+      Template[templateNameWithPrefix] = tmpl;
+    });
   };
 
   moduleAPI.widget = function (widgetName) {

@@ -3,25 +3,23 @@ var modules    = {};
 var moduleAPIs = {};
 var plugins    = {};
 
-function registerModule (moduleName) {
-
-  var module;
-
-  if (moduleName in modules) {
+function createModule(moduleName) {
+  if (moduleName in modules)
     throw new Error('module ' + moduleName + ' already exists');
-  }
 
   var manager = new AMDManager();
 
-  module = modules[moduleName] = {
-    
+  var module = modules[moduleName] = {
+
     instancesByName : {},
     factories       : [],
     i18n            : i18n.namespace(),
-    define          : wrapDefine(manager),
-    require         : wrapRequire(manager),
 
     addToRecipies: function (factory) {
+      if (module.isFrozen) {
+        throw new Error('Cannot add a new recipie to module `' + moduleName + '` since it is already frozen.');
+      }
+
       var listOfNames = _.keys(module.instancesByName);
       module.factories.push(factory);
       _.each(listOfNames, function (name) {
@@ -30,13 +28,14 @@ function registerModule (moduleName) {
     },
   };
 
-  module.addToRecipies(function (instance, settings, i18n) {
-    // just for fun ;)
+  module.addToRecipies(function (instance, settings) {
+    // for fun ;)
     console.log('creating instance ' + settings.__name__ + ' of module ' + settings.__module__);
     // for convenience
-    instance.i18n = i18n;
+    instance.i18n = module.i18n;
   });
 
+  return module;
 };
 
 Module = function (moduleName, widgetName) {
@@ -45,7 +44,7 @@ Module = function (moduleName, widgetName) {
   var widgetAPIs = {};
 
   if (!_.has(modules, moduleName)) {
-    registerModule(moduleName);
+    createModule(moduleName);
   }
 
   // TODO: use define/require instead of global array
@@ -101,38 +100,57 @@ Module = function (moduleName, widgetName) {
     module.i18n.translateTo(language, map);
   };
 
-  // this is pretty unsafe :/
-  // at least we should provide "freeze" method
-  // to prevent module from further modifications
-  moduleAPI.extend = function (factory, options) {
+  moduleAPI.freeze = function () {
+    module.isFrozen = true;
+  };
+
+  moduleAPI.extend = function (factory) {
     module.addToRecipies(factory);
   };
 
   moduleAPI.depend = function (deps) {
     return {
       extend: function (factory) {
-        module.require(deps, function () {
-          module.extend(factory);
+        module.addToRecipies(function (instance) {
+          instance.require(deps, function () {
+            applyFactory(factory, instance, module);
+          });
         });
       }
     };
   };
 
   moduleAPI.include = function (pluginName) {
-    // TODO: check for errors
-    module.define(plugin, plugins[pluginName].deps, function () {
-      return plugins[pluginName].body(module);
+    var plugin = plugins[pluginName];
+    if (!plugin) {
+      throw new Error('Plugin ' + pluginName + ' does not exist');
+    }
+    module.addToRecipies(function (instance, settings) {
+      instance.define(pluginName, plugin.deps, plugin.body);
     });
   };
 
   moduleAPI.define = function () {
-
-    module.define.apply(null, arguments);
+    var args = arguments;
+    module.addToRecipies(function (instance) {
+      instance.define.apply(null, args);
+    });
   };
 
   moduleAPI.require = function () {
-    return module.require.apply(null, arguments);
+    var args = arguments;
+    module.addToRecipies(function (instance) {
+      instance.require.apply(null, args);
+    })
   };
+
+  // built-in definitions
+
+  module.addToRecipies(function (instance) {
+    instance.define('$instance', function () {
+      return instance;
+    });
+  });
 
   moduleAPI.lazy = function () {
 

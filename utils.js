@@ -2,8 +2,18 @@
 var propertiesOfInstance = [ 'instance', 'settings', 'require', 'define', 'Template' ];
 var propertiesOfModule   = [ 'i18n' ];
 
-applyFactory = function (factory, instanceName, module) {
-  var instance = module.instancesByName[instanceName], args = [];
+applyFactory = function (factory, instance, module) {
+  var args = [], instanceName = '';
+
+  if (typeof instance === 'string') {
+    instanceName = instance; instance = module.instancesByName[instanceName];
+  } else {
+    instanceName = instance.settings.__name__;
+  }
+
+  if (!instance) {
+    throw new Error('Instance `' + instanceName + '` does not exist.');
+  }
 
   _.each(propertiesOfInstance, function (name) {
     if (name !== 'instance') {

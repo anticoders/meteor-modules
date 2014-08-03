@@ -28,7 +28,7 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
 
 });
 
-Plugin.registerSourceHandler("module.html", function (compileStep) {
+Plugin.registerSourceHandler("module.html", {isTemplate: true}, function (compileStep) {
   //if (compileStep.arch.match(/^browser(\.|$)/))
   //  return;
 
@@ -58,9 +58,6 @@ Plugin.registerSourceHandler("module.html", function (compileStep) {
   // XXX we ignore here results.head and .body
 
   if (results.js) {
-
-    console.log(results.js);
-
   
     compileStep.addJavaScript({
       path       : compileStep.inputPath,

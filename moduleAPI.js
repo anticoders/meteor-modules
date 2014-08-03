@@ -126,6 +126,7 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.define = function () {
+
     module.define.apply(null, arguments);
   };
 
@@ -140,9 +141,11 @@ Module = function (moduleName, widgetName) {
   moduleAPI.addTemplate = function (templateName, templateFunc) {
     if (!Meteor.isClient) return;
 
-    module.addToRecipies(function (instance, settings, require, define, _Template) {
-      // TODO: better error messages
+    module.addToRecipies(function (instance) {
+      var settings = instance.settings;
+      var _Template = instance.Template;
 
+      // TODO: better error messages
       if (_Template.hasOwnProperty(templateName)) {
         if (_Template[templateName].__makeView)
           throw new Error("There are multiple templates named '" + templateName + "'. Each template needs a unique name.");

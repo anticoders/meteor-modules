@@ -31,14 +31,14 @@ function createModule(moduleName) {
       if (instanceName in module.instancesByName)
         throw new Error('instance ' + instanceName + ' already exists');
 
-      var instance = {};
+      var instance;
       var manager = new AMDManager();
 
       settings = settings || {};
       settings.__module__ = moduleName;
       settings.__name__ = instanceName;
 
-      module.instancesByName[instanceName] = {
+      instance = module.instancesByName[instanceName] = {
         settings : settings,
         require  : wrapRequire(manager),
         define   : wrapDefine(manager),
@@ -46,6 +46,36 @@ function createModule(moduleName) {
         // we use this one for lazy loading
         __useFactory__ : function (factory) {
           applyFactory(factory, instance, module);
+        },
+
+        __addTemplate__: function (templateName, templateFunc) {
+          var _Template = instance.Template;
+
+          if (!_Template) return;
+
+          // TODO: better error messages
+          if (_Template.hasOwnProperty(templateName)) {
+            if (_Template[templateName].__makeView)
+              throw new Error("There are multiple templates named '" + templateName + "'. Each template needs a unique name.");
+            throw new Error("This template name is reserved: " + templateName);
+          }
+
+          // TODO: use prefixed name
+
+          var tmpl = new _Template.prototype.constructor;
+          var templateNameWithPrefix = settings.__name__ + '_' + templateName;
+
+          tmpl.__viewName     = 'Template.' + templateName;
+          tmpl.__templateName = templateNameWithPrefix;
+          tmpl.__render       = templateFunc;
+
+          _Template[templateName] = tmpl;
+
+          _Template.prototype[templateName] = tmpl;
+
+          if (typeof Template !== 'undefined') {
+            Template[templateNameWithPrefix] = tmpl;
+          }
         },
       };
 
@@ -161,34 +191,9 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.addTemplate = function (templateName, templateFunc) {
-    if (!Meteor.isClient) return;
-
     module.addToRecipies(function (instance) {
-      var settings = instance.settings;
-      var _Template = instance.Template;
-
-      // TODO: better error messages
-      if (_Template.hasOwnProperty(templateName)) {
-        if (_Template[templateName].__makeView)
-          throw new Error("There are multiple templates named '" + templateName + "'. Each template needs a unique name.");
-        throw new Error("This template name is reserved: " + templateName);
-      }
-
-      // TODO: use prefixed name
-
-      var tmpl = new _Template.prototype.constructor;
-      var templateNameWithPrefix = settings.__name__ + '_' + templateName
-
-      tmpl.__viewName     = 'Template.' + templateName;
-      tmpl.__templateName = templateNameWithPrefix;
-      tmpl.__render       = templateFunc;
-
-      // note the three methods of accessing this template
-      _Template[templateName] = tmpl;
-
-      _Template.prototype[templateName] = tmpl;
-
-      Template[templateNameWithPrefix] = tmpl;
+      console.log('define template', templateName);
+      instance.__addTemplate__(templateName, templateFunc);
     });
   };
 
@@ -216,6 +221,14 @@ Module = function (moduleName, widgetName) {
           },
         };
       }, // depend
+      addTemplate: function (templateName, templateFunc) {
+        factories.push({
+          deps: [],
+          body: "function (instance) {\n" +
+            "$instance.__addTemplate__(" + JSON.stringify(templateName) + ", " + templateFunc.toString() + ");\n" +
+          "}\n"
+        });
+      },
     };
 
     return layerAPI;
@@ -235,10 +248,10 @@ Module = function (moduleName, widgetName) {
             Array.prototype.push.apply(deps, factory.deps);
           });
           deps = _.map(_.unique(deps), function (name) { return JSON.stringify(name); });
-          //-----------------------------------------------------------------------------------------------------------------------------------------------------------
-          cache[layerName] = 'Module(' + JSON.stringify(moduleName) + ').define(' + layerName + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n' +
+          //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          cache[layerName] = 'Module(' + JSON.stringify(moduleName) + ').define(' + JSON.stringify(layerName) + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n' +
             _.map(layerFactories[layerName], function (factory) {
-              return '$instance.__useFactory__(' + factory.toString() + '\n);';
+              return '$instance.__useFactory__(' + factory.body.toString() + ');';
             }).join(';\n') + '\n' +
           '});';
         }

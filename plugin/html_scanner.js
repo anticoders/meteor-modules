@@ -162,8 +162,12 @@ html_scanner = {
 
         options = options || {};
         
-        results.js += "Module(" + JSON.stringify(options.module) + ").addTemplate(" +
-                        JSON.stringify(name) + ", " + renderFuncCode + ");\n";
+        if (options.layer) {
+          results.js += "Module(" + JSON.stringify(options.module) + ").layer(" + JSON.stringify(options.layer) + ").addTemplate(" + JSON.stringify(name) + ", " + renderFuncCode + ");\n";
+        } else {
+          results.js += "Module(" + JSON.stringify(options.module) + ").addTemplate(" + JSON.stringify(name) + ", " + renderFuncCode + ");\n";
+        }
+
       }
     } catch (e) {
       if (e.scanner) {

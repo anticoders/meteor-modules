@@ -4,12 +4,12 @@ var moduleAPIs = {};
 var plugins    = {};
 
 function createModule(moduleName) {
-  if (moduleName in modules)
+  if (moduleName && (moduleName in modules))
     throw new Error('module ' + moduleName + ' already exists');
 
   var manager = new AMDManager();
 
-  var module = modules[moduleName] = {
+  var module = {
 
     instancesByName : {},
     factories       : [],
@@ -19,21 +19,63 @@ function createModule(moduleName) {
       if (module.isFrozen) {
         throw new Error('Cannot add a new recipie to module `' + moduleName + '` since it is already frozen.');
       }
-
       var listOfNames = _.keys(module.instancesByName);
       module.factories.push(factory);
       _.each(listOfNames, function (name) {
         applyFactory(factory, name, module);
       });
     },
+
+    instantiate: function (instanceName, settings) {
+
+      if (instanceName in module.instancesByName)
+        throw new Error('instance ' + instanceName + ' already exists');
+
+      var instance = {};
+      var manager = new AMDManager();
+
+      settings = settings || {};
+      settings.__module__ = moduleName;
+      settings.__name__ = instanceName;
+
+      module.instancesByName[instanceName] = {
+        settings : settings,
+        require  : wrapRequire(manager),
+        define   : wrapDefine(manager),
+      };
+
+      _.each(module.factories, function (factory) {
+        applyFactory(factory, instanceName, module);
+      });
+
+      return module.instancesByName[instanceName];
+    },
   };
 
-  module.addToRecipies(function (instance, settings) {
-    // for fun ;)
-    console.log('creating instance ' + settings.__name__ + ' of module ' + settings.__module__);
-    // for convenience
-    instance.i18n = module.i18n;
+  // built-in definitions
+
+  // do we want to make this one optional?
+  module.addToRecipies(function (instance) {
+    var _Template = function Template () {};
+
+    if (typeof Template !== 'undefined') {
+      _Template.prototype = Object.create(Template.prototype);
+      _Template.prototype.constructor = _Template;
+    }
+
+    instance.Template = { prototype: _Template.prototype };
   });
+
+  module.addToRecipies(function (instance, settings) {
+    instance.i18n = module.i18n;
+    instance.define('$instance', function () {
+      return instance; // useful for plugins
+    });
+  });
+
+  if (moduleName) {
+    modules[moduleName] = module;
+  }
 
   return module;
 };
@@ -56,44 +98,9 @@ Module = function (moduleName, widgetName) {
   }
 
   moduleAPIs[moduleName] = moduleAPI = {};
-
-  moduleAPI.configure = function (options) {
-    if (_.isString(options.globals)) {
-      module.globals.push(options.globals);
-    } else if (_.isArray(options.globals)) {
-      Array.prototype.push.apply(module.globals, options.globals);
-    }
-  }
   
-  moduleAPI.as = function (instanceName, settings) {
-
-    var instance = {};
-    var manager = new AMDManager();
-    var _Template = function Template () {};
-
-    if (Meteor.isClient) {
-      _Template.prototype = Object.create(Template.prototype);
-      _Template.prototype.constructor = _Template;
-    }
-
-    settings = settings || {};
-    settings.__module__ = moduleName;
-    settings.__name__ = instanceName;
-
-    // remember for further use
-
-    module.instancesByName[instanceName] = {
-      settings : settings,
-      require  : wrapRequire(manager),
-      define   : wrapDefine(manager),
-      Template : { prototype: _Template.prototype },
-    };
-
-    _.each(module.factories, function (factory) {
-      applyFactory(factory, instanceName, module);
-    });
-
-    return module.instancesByName[instanceName];
+  moduleAPI.as = function () {
+    return module.instantiate.apply(module, arguments);
   };
 
   moduleAPI.translateTo = function (language, map) {
@@ -143,14 +150,6 @@ Module = function (moduleName, widgetName) {
       instance.require.apply(null, args);
     })
   };
-
-  // built-in definitions
-
-  module.addToRecipies(function (instance) {
-    instance.define('$instance', function () {
-      return instance;
-    });
-  });
 
   moduleAPI.lazy = function () {
 

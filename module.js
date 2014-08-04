@@ -6,6 +6,7 @@ getOrCreateModule = function (moduleName) {
   }
 
   var manager = new AMDManager();
+  var requests = {};
 
   var module = {
 
@@ -31,6 +32,22 @@ getOrCreateModule = function (moduleName) {
 
       var instance;
       var manager = new AMDManager();
+      var useAjax = false;
+
+      manager.onModuleNotFound(function (__module__) {
+        var requestURL = '/modules/' + moduleName + '/' + __module__.name;
+        if (useAjax && !requests[requestURL]) {
+          requests[requestURL] = true;
+          $.ajax({
+            url  : requestURL,
+            type : 'GET', dataType : 'script',
+          }).done(function (message) {});
+        }
+      });
+
+      Meteor.startup(function () {
+        useAjax = true;
+      });
 
       settings = settings || {};
       settings.__module__ = moduleName;

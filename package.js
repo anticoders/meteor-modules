@@ -19,6 +19,7 @@ Package.on_use(function (api) {
     'utils.js',
     'require.js',
     'i18n.js',
+    'module.js',
     'moduleAPI.js',
   ]);
 

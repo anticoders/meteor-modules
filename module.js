@@ -6,20 +6,48 @@ getOrCreateModule = function (moduleName) {
   }
 
   var requests = {}, manager = new AMDManager();
-  
+
   var module = {
+
     instancesByName : {},
+    layerFactories  : {},
     factories       : [],
     i18n            : i18n.namespace(),
 
     addToRecipies: function (factory) {
-      if (module.isFrozen) {
-        throw new Error('Cannot add a new recipie to module `' + moduleName + '` since it is already frozen.');
-      }
       module.factories.push(factory);
       _.each(_.keys(module.instancesByName), function (name) {
         applyFactory(factory, name, module);
       });
+    },
+
+    addLayerFactory: function (layerName, options) {
+      if (!module.layerFactories[layerName]) {
+        module.layerFactories[layerName] = [];
+      }
+      module.layerFactories[layerName].push({
+        type: options.type || 'factory',
+        deps: options.deps || [],
+        name: options.name,
+        body: options.body,
+      });
+    },
+
+    compileLayer: function (layerName) {
+      var deps = [];
+      _.each(module.layerFactories[layerName], function (factory) {
+        Array.prototype.push.apply(deps, factory.deps);
+      });
+      deps = _.map(_.unique(deps), function (name) { return JSON.stringify(name); });
+      //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      return 'Module(' + JSON.stringify(moduleName) + ').define(' + JSON.stringify(layerName) + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n\n' +
+        _.map(module.layerFactories[layerName], function (factory) {
+          if (factory.type === 'template') {
+            return "$instance.__addTemplate__(" + JSON.stringify(factory.name) + ", " + factory.body.toString() + ");";
+          }
+          return '$instance.__useFactory__(' + factory.body.toString() + ');';
+        }).join('\n\n') + '\n\n' +
+      '});';
     },
 
     instantiate: function (instanceName, settings) {

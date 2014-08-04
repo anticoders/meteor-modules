@@ -3,7 +3,6 @@ var plugins    = {};
 
 Module = function (moduleName, widgetName) {
 
-  var layerFactories = {};
   var layerAPIs = {};
 
   // TODO: use define/require instead of global array
@@ -16,16 +15,12 @@ Module = function (moduleName, widgetName) {
 
   moduleAPIs[moduleName] = moduleAPI = {};
   
-  moduleAPI.as = function () {
+  moduleAPI.as = moduleAPI.load = function () {
     return module.instantiate.apply(module, arguments);
   };
 
   moduleAPI.translateTo = function (language, map) {
     module.i18n.translateTo(language, map);
-  };
-
-  moduleAPI.freeze = function () {
-    module.isFrozen = true;
   };
 
   moduleAPI.extend = function (factory) {
@@ -76,36 +71,22 @@ Module = function (moduleName, widgetName) {
 
   moduleAPI.layer = function (layerName) {
     var layerAPI  = layerAPIs[layerName];
-    var factories = layerFactories[layerName];
 
     if (layerAPI) return layerAPI;
 
-    factories = layerFactories[layerName] = [];
     layerAPI = layerAPIs[layerName] = {
       extend: function (factory) {
-        factories.push({
-          type: 'factory',
-          body: factory,
-          deps: [],
-        });
+        module.addLayerFactory(layerName, { body: factory });
       }, // extend
       depend: function (deps) {
         return {
           extend: function (factory) {
-            factories.push({
-              type: 'factory',
-              body: factory,
-              deps: deps,
-            });
+            module.addLayerFactory(layerName, { body: factory, deps: deps });
           },
         };
       }, // depend
       addTemplate: function (templateName, templateFunc) {
-        factories.push({
-          type: 'template',
-          name: templateName,
-          body: templateFunc,
-        });
+        module.addLayerFactory(layerName, { type: 'template', name: templateName, body: templateFunc });
       },
     };
 
@@ -113,38 +94,15 @@ Module = function (moduleName, widgetName) {
   };
 
   Meteor.startup(function () {
-
     var cache = {};
-
     if (Meteor.isServer) {
-
       moduleAPI.compile = function (layerName) {
-        var deps;
         if (!cache[layerName]) {
-          deps = [];
-          _.each(layerFactories[layerName], function (factory) {
-            Array.prototype.push.apply(deps, factory.deps);
-          });
-          deps = _.map(_.unique(deps), function (name) { return JSON.stringify(name); });
-          //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-          cache[layerName] = 'Module(' + JSON.stringify(moduleName) + ').define(' + JSON.stringify(layerName) + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n\n' +
-            _.map(layerFactories[layerName], function (factory) {
-              if (factory.type === 'template') {
-                return "$instance.__addTemplate__(" + JSON.stringify(factory.name) + ", " + factory.body.toString() + ");";
-              }
-              return '$instance.__useFactory__(' + factory.body.toString() + ');';
-            }).join('\n\n') + '\n\n' +
-          '});';
+          cache[layerName] = module.compileLayer(layerName);
         }
         return cache[layerName];
       };
-
-    } else {
-
-      // TODO: lazy definition
-
     }
-
   });
   
   return moduleAPI;

@@ -5,9 +5,11 @@ Router.configure({
 });
 
 Router.map(function () {
-
   this.route('home', {
     path: '/',
+    waitOn: function () {
+      return MyModule;
+    },
   });
 
   this.route('myModule_dashboard', {
@@ -16,10 +18,7 @@ Router.map(function () {
       return MyModule.require(['dashboard']);
     },
   })
-
 });
-
-
 
 UI.registerHelper('myModuleHome', function () {
   return MyModule.Template.home;

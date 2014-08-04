@@ -1,6 +1,30 @@
 
 var path = Npm.require('path');
 
+Plugin.registerSourceHandler('module.json', function (compileStep) {
+
+  var isBrowser = compileStep.arch.match(/^browser(\.|$)/);
+  var config = JSON.parse(compileStep.read().toString('utf8'));
+  var contents = '';
+  var moduleName = config.name;
+
+  if (!moduleName) {
+    // TODO: throw error
+  }
+
+  _.each(config.plugins, function (name) {
+    contents += 'Module(' + JSON.stringify(moduleName) + ').usePlugin(' + JSON.stringify(name) + ');\n';
+  });
+
+  compileStep.addJavaScript({
+    path       : compileStep.inputPath,
+    sourcePath : compileStep.inputPath,
+    data       : contents,
+    bare       : isBrowser,
+  });
+
+});
+
 Plugin.registerSourceHandler('module.js', function (compileStep) {
 
   var options = parseModuleOptions(compileStep);
@@ -12,7 +36,6 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
     throw Error('Cannot figure out module name for ' + compileStep.inputPath);
   }
 
-  var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
   var contents = compileStep.read().toString('utf8');
 
   if (!isModuleJs) {

@@ -1,7 +1,8 @@
 var modules = {};
 
 getOrCreateModule = function (moduleName) {
-  if (moduleName && (moduleName in modules)) {
+
+  if (moduleName && modules[moduleName] !== undefined) {
     return modules[moduleName];
   }
 
@@ -12,12 +13,18 @@ getOrCreateModule = function (moduleName) {
     instancesByName : {},
     layerFactories  : {},
     factories       : [],
+    plugins         : [],
     i18n            : i18n.namespace(),
 
-    addToRecipies: function (factory) {
-      module.factories.push(factory);
+    addToRecipies: function (factory, options) {
+      options = options || {};
+      options.type = options.type || 'factory';
+      module.factories.push({
+        type: options.type,
+        body: factory,
+      });
       _.each(_.keys(module.instancesByName), function (name) {
-        applyFactory(factory, name, module);
+        applyFactory(factory, name, module, { isPlugin: options.type === 'plugin' });
       });
     },
 
@@ -31,6 +38,10 @@ getOrCreateModule = function (moduleName) {
         name: options.name,
         body: options.body,
       });
+    },
+
+    usePlugin: function (pluginName) {
+      module.plugins.push(pluginName);
     },
 
     compileLayer: function (layerName) {
@@ -119,7 +130,9 @@ getOrCreateModule = function (moduleName) {
       };
 
       _.each(module.factories, function (factory) {
-        applyFactory(factory, instanceName, module);
+        applyFactory(factory.body, instanceName, module, {
+          isPlugin: factory.type === 'plugin'
+        });
       });
 
       return module.instancesByName[instanceName];
@@ -138,13 +151,30 @@ getOrCreateModule = function (moduleName) {
     }
 
     instance.Template = { prototype: _Template.prototype };
-  });
+  }, { type: 'plugin' });
 
   module.addToRecipies(function (instance, settings) {
     instance.i18n = module.i18n;
     instance.define('$instance', function () {
       return instance; // useful for plugins
     });
+  }, { type: 'plugin' });
+
+  var readyDependency = new Deps.Dependency();
+  var isReady = false;
+
+  module.addToRecipies(function (instance) {
+    instance.ready = function () {
+      readyDependency.depend();
+      return isReady;
+    }
+  }, { type: 'plugin' });
+
+  module.addToRecipies(function () {
+    if (!isReady) {
+      isReady = true;
+      readyDependency.changed();
+    }
   });
 
   if (moduleName) {

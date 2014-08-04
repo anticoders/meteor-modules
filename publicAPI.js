@@ -1,5 +1,5 @@
 var moduleAPIs = {};
-var plugins    = {};
+var plugins    = new AMDManager();
 
 Module = function (moduleName, widgetName) {
 
@@ -39,13 +39,15 @@ Module = function (moduleName, widgetName) {
     };
   };
 
-  moduleAPI.include = function (pluginName) {
-    var plugin = plugins[pluginName];
-    if (!plugin) {
-      throw new Error('Plugin ' + pluginName + ' does not exist');
-    }
-    module.addToRecipies(function (instance, settings) {
-      instance.define(pluginName, plugin.deps, plugin.body);
+  moduleAPI.usePlugin = function (pluginName) {
+    module.usePlugin(pluginName);
+    //---------------------------------------------
+    plugins.require([pluginName], function (plugin) {
+      module.addToRecipies(function (instance) {
+        instance.define(pluginName, plugin.deps, function () {
+          plugin.body.call(null, instance);
+        });
+      }, { type: 'plugin' });
     });
   };
 
@@ -71,9 +73,7 @@ Module = function (moduleName, widgetName) {
 
   moduleAPI.layer = function (layerName) {
     var layerAPI  = layerAPIs[layerName];
-
     if (layerAPI) return layerAPI;
-
     layerAPI = layerAPIs[layerName] = {
       extend: function (factory) {
         module.addLayerFactory(layerName, { body: factory });
@@ -89,7 +89,6 @@ Module = function (moduleName, widgetName) {
         module.addLayerFactory(layerName, { type: 'template', name: templateName, body: templateFunc });
       },
     };
-
     return layerAPI;
   };
 
@@ -113,10 +112,13 @@ Module.registerPlugin = function (pluginName, deps, body) {
     body = deps; deps = [];
   }
   if (!_.isFunction(body)) {
-    throw new Meteor.Error('body must be a function');
+    throw new Meteor.Error('plugin body must be a function');
   }
-  plugins[pluginName] = {
-    body: body,
-    deps: deps,
-  };
+  plugins.define(pluginName, [], function () {
+    return {
+      name: pluginName,
+      body: body,
+      deps: deps,
+    }
+  });
 };

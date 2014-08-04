@@ -1,0 +1,6 @@
+{
+  "name": "mySuperCoolModule",
+  "plugins": [
+    "router"
+  ]
+}

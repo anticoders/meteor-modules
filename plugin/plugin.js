@@ -13,10 +13,12 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
   var contents = compileStep.read().toString('utf8');
 
-  if (!options.layer) {
-    contents = "Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
-  } else {
-    contents = "Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
+  if (path.basename(compileStep.inputPath) !== 'module.js') {
+    if (!options.layer) {
+      contents = "Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
+    } else {
+      contents = "Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
+    }
   }
 
   compileStep.addJavaScript({

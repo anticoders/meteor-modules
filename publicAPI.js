@@ -6,45 +6,44 @@ Module = function (moduleName, widgetName) {
   var layerAPIs = {};
 
   // TODO: use define/require instead of global array
-  var moduleAPI = moduleAPIs[moduleName];
-  var module    = getOrCreateModule(moduleName);
+  var methods = moduleAPIs[moduleName];
+  var module  = getOrCreateModule(moduleName);
 
-  if (moduleAPI) { // it's already there, so no need to create
-    return moduleAPI;
+  if (methods) { // it's already there, so no need to create
+    return methods;
   }
 
-  moduleAPIs[moduleName] = moduleAPI = {};
+  moduleAPIs[moduleName] = methods = {};
   
-  moduleAPI.as = moduleAPI.load = function () {
+  methods.as = methods.load = function () {
     return module.instantiate.apply(module, arguments);
   };
 
-  moduleAPI.translateTo = function (language, map) {
+  methods.translateTo = function (language, map) {
     module.i18n.translateTo(language, map);
   };
 
-  moduleAPI.extend = function (factory) {
+  methods.extend = function (factory) {
     module.require('$config', function ($config) {
       module.require(module.plugins.concat($config.plugins), function () {
-        console.log('plugins are ready');
         module.addToRecipies(factory);
       });
     });
   };
 
-  moduleAPI.depend = function (deps) {
-    return {
-      extend: function (factory) {
-        module.addToRecipies(function (instance) {
-          instance.require(deps, function () {
-            applyFactory(factory, instance, module);
-          });
-        });
-      }
-    };
-  };
+  //methods.depend = function (deps) {
+  //  return {
+  //    extend: function (factory) {
+  //      module.addToRecipies(function (instance) {
+  //        instance.require(deps, function () {
+  //          applyFactory(factory, instance, module);
+  //        });
+  //      });
+  //    }
+  //  };
+  //};
 
-  moduleAPI.configure = function (config) {
+  methods.configure = function (config) {
     config = config || {};
     module.define('$config', function () {
       return _.defaults(config, {
@@ -54,30 +53,21 @@ Module = function (moduleName, widgetName) {
     });
   };
 
-  // load plugins when config is ready
-  module.require('$config', function ($config) {
-    _.each(module.plugins.concat($config.plugins), function (pluginName) {
-      plugins.require([pluginName], function (plugin) {
-        module.define(pluginName, plugin.deps, plugin.body);
-      });
-    });
-  });
-
-  moduleAPI.define = function () {
+  methods.define = function () {
     var args = arguments;
     module.addToRecipies(function (instance) {
       instance.define.apply(null, args);
     });
   };
 
-  moduleAPI.require = function () {
+  methods.require = function () {
     var args = arguments;
     module.addToRecipies(function (instance) {
       instance.require.apply(null, args);
     })
   };
 
-  moduleAPI.addTemplate = function (templateName, templateFunc) {
+  methods.addTemplate = function (templateName, templateFunc) {
     module.require('$config', function ($config) {
       module.require(module.plugins.concat($config.plugins), function () {
         module.addToRecipies(function (instance) {
@@ -87,7 +77,7 @@ Module = function (moduleName, widgetName) {
     });
   };
 
-  moduleAPI.layer = function (layerName) {
+  methods.layer = function (layerName) {
     var layerAPI  = layerAPIs[layerName];
     if (layerAPI) return layerAPI;
     layerAPI = layerAPIs[layerName] = {
@@ -108,10 +98,26 @@ Module = function (moduleName, widgetName) {
     return layerAPI;
   };
 
+  // load config and plugins
+
+  module.require('$config', function ($config) {
+    _.each(module.plugins.concat($config.plugins), function (pluginName) {
+      plugins.require([pluginName], function (plugin) {
+        module.define(pluginName, plugin.deps, plugin.body);
+      });
+    });
+  });
+
+  Meteor.startup(function () {
+    if (!module.hasConfig()) {
+      methods.configure();
+    }
+  });
+
   Meteor.startup(function () {
     var cache = {};
     if (Meteor.isServer) {
-      moduleAPI.compile = function (layerName) {
+      methods.compile = function (layerName) {
         if (!cache[layerName]) {
           cache[layerName] = module.compileLayer(layerName);
         }
@@ -120,7 +126,7 @@ Module = function (moduleName, widgetName) {
     }
   });
   
-  return moduleAPI;
+  return methods;
 };
 
 Module.registerPlugin = function (pluginName, deps, body) {

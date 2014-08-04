@@ -1,13 +1,13 @@
 
+// built-in plugins
+
 Module.registerPlugin('$template', [ '$module' ], function ($module) {
-  console.log('adding $template recipie')
   $module.addToRecipies(function (instance) {
     var _Template = function Template () {};
     if (typeof Template !== 'undefined') {
       _Template.prototype = Object.create(Template.prototype);
       _Template.prototype.constructor = _Template;
     }
-    console.log('adding Template to', instance.settings.__name__);
     instance.Template = { prototype: _Template.prototype };
   });
 });

@@ -42,8 +42,8 @@ getOrCreateModule = function (moduleName) {
       });
     },
 
-    usePlugin: function (pluginName) {
-      module.plugins.push(pluginName);
+    hasConfig: function () {
+      return !!manager.get('$config');
     },
 
     compileLayer: function (layerName) {
@@ -101,9 +101,9 @@ getOrCreateModule = function (moduleName) {
         },
 
         __addTemplate__: function (templateName, templateFunc) {
-          console.log('adding', templateName, 'to', instanceName);
           var _Template = instance.Template;
 
+          // TODO: print warning
           if (!_Template) return;
 
           // TODO: better error messages

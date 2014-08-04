@@ -20,7 +20,7 @@ Package.on_use(function (api) {
     'require.js',
     'i18n.js',
     'module.js',
-    'moduleAPI.js',
+    'publicAPI.js',
   ]);
 
   api.add_files([

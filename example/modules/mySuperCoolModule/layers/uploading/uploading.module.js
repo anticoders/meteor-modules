@@ -1,3 +1,5 @@
+
+
 Template.uploading.events({
 
 });
@@ -7,3 +9,4 @@ Template.uploading.helpers({
     return 'This is a helper.';
   }
 });
+

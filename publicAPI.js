@@ -68,13 +68,8 @@ Module = function (moduleName, widgetName) {
     })
   };
 
-  moduleAPI.lazy = function () {
-
-  };
-
   moduleAPI.addTemplate = function (templateName, templateFunc) {
     module.addToRecipies(function (instance) {
-      console.log('define template', templateName);
       instance.__addTemplate__(templateName, templateFunc);
     });
   };
@@ -89,6 +84,7 @@ Module = function (moduleName, widgetName) {
     layerAPI = layerAPIs[layerName] = {
       extend: function (factory) {
         factories.push({
+          type: 'factory',
           body: factory,
           deps: [],
         });
@@ -97,6 +93,7 @@ Module = function (moduleName, widgetName) {
         return {
           extend: function (factory) {
             factories.push({
+              type: 'factory',
               body: factory,
               deps: deps,
             });
@@ -105,10 +102,9 @@ Module = function (moduleName, widgetName) {
       }, // depend
       addTemplate: function (templateName, templateFunc) {
         factories.push({
-          deps: [],
-          body: "function (instance) {\n" +
-            "$instance.__addTemplate__(" + JSON.stringify(templateName) + ", " + templateFunc.toString() + ");\n" +
-          "}\n"
+          type: 'template',
+          name: templateName,
+          body: templateFunc,
         });
       },
     };
@@ -130,11 +126,14 @@ Module = function (moduleName, widgetName) {
             Array.prototype.push.apply(deps, factory.deps);
           });
           deps = _.map(_.unique(deps), function (name) { return JSON.stringify(name); });
-          //---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-          cache[layerName] = 'Module(' + JSON.stringify(moduleName) + ').define(' + JSON.stringify(layerName) + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n' +
+          //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+          cache[layerName] = 'Module(' + JSON.stringify(moduleName) + ').define(' + JSON.stringify(layerName) + ', [ "$instance", ' + deps.join(', ') + '], function ($instance) {\n\n' +
             _.map(layerFactories[layerName], function (factory) {
+              if (factory.type === 'template') {
+                return "$instance.__addTemplate__(" + JSON.stringify(factory.name) + ", " + factory.body.toString() + ");";
+              }
               return '$instance.__useFactory__(' + factory.body.toString() + ');';
-            }).join(';\n') + '\n' +
+            }).join('\n\n') + '\n\n' +
           '});';
         }
         return cache[layerName];

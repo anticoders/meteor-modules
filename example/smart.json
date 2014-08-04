@@ -2,6 +2,7 @@
   "packages": {
     "modules": {
       "path": ".."
-    }
+    },
+    "iron-router": {}
   }
 }

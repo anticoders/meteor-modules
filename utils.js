@@ -1,6 +1,5 @@
 
-var propertiesOfInstance = [ 'instance', 'settings', 'require', 'define', 'Template' ];
-var propertiesOfModule   = [ 'i18n' ];
+var propertiesOfInstance = [ 'settings', 'require', 'define', 'Template', 'i18n' ];
 
 applyFactory = function (factory, instance, module) {
   var args = [], instanceName = '';
@@ -15,25 +14,15 @@ applyFactory = function (factory, instance, module) {
     throw new Error('Instance `' + instanceName + '` does not exist.');
   }
 
-  _.each(propertiesOfInstance, function (name) {
-    if (name !== 'instance') {
-      args.push(instance[name]);
-    } else {
-      args.push(instance);
-    }
-  });
-
-  _.each(propertiesOfModule, function (name) {
-    args.push(module[name]);
-  });
+  args = [ instance ].concat(_.map(propertiesOfInstance, function (name) {
+    return instance[name];
+  }));
 
   factory.apply({}, args);
 }
 
 getFactoryArgsString = function (moduleName) {
-  return _.map(propertiesOfInstance, function (name) {
-    return name === 'instance' ? toCamelCase(moduleName) : name;
-  }).concat(propertiesOfModule).join(', ');
+  return toCamelCase(moduleName) + ', ' + propertiesOfInstance.join(', ');
 }
 
 toCamelCase = function (name) {

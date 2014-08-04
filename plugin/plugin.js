@@ -4,6 +4,8 @@ var path = Npm.require('path');
 Plugin.registerSourceHandler('module.js', function (compileStep) {
 
   var options = parseModuleOptions(compileStep);
+  var isBrowser = compileStep.arch.match(/^browser(\.|$)/);
+  var isModuleJs = path.basename(compileStep.inputPath) === 'module.js';
 
   if (!options.module) {
     // TODO: use compileStep.error instead of throwing excpetion
@@ -13,18 +15,24 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   var weAreOnTheServer = !compileStep.arch.match(/^browser(\.|$)/);
   var contents = compileStep.read().toString('utf8');
 
-  if (path.basename(compileStep.inputPath) !== 'module.js') {
+  if (!isModuleJs) {
     if (!options.layer) {
       contents = "Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
     } else {
-      contents = "Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
+      if (isBrowser) {
+        // on browser, only register this layer
+        contents = "Module('" + options.module + "').layer('" + options.layer + "');";
+      } else {
+        contents = "Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
+      }
     }
   }
 
   compileStep.addJavaScript({
     path       : compileStep.inputPath, // what is this for?
     sourcePath : compileStep.inputPath,
-    data       : contents
+    data       : contents,
+    bare       : !isModuleJs && isBrowser,
   });
 
 });
@@ -59,7 +67,7 @@ Plugin.registerSourceHandler("module.html", {isTemplate: true}, function (compil
   // XXX we ignore here results.head and .body
 
   if (results.js) {
-  
+    // TODO: raname to template.[name].js
     compileStep.addJavaScript({
       path       : compileStep.inputPath,
       sourcePath : compileStep.inputPath,

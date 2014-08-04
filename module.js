@@ -5,11 +5,9 @@ getOrCreateModule = function (moduleName) {
     return modules[moduleName];
   }
 
-  var manager = new AMDManager();
-  var requests = {};
-
+  var requests = {}, manager = new AMDManager();
+  
   var module = {
-
     instancesByName : {},
     factories       : [],
     i18n            : i18n.namespace(),
@@ -18,15 +16,13 @@ getOrCreateModule = function (moduleName) {
       if (module.isFrozen) {
         throw new Error('Cannot add a new recipie to module `' + moduleName + '` since it is already frozen.');
       }
-      var listOfNames = _.keys(module.instancesByName);
       module.factories.push(factory);
-      _.each(listOfNames, function (name) {
+      _.each(_.keys(module.instancesByName), function (name) {
         applyFactory(factory, name, module);
       });
     },
 
     instantiate: function (instanceName, settings) {
-
       if (instanceName in module.instancesByName)
         throw new Error('instance ' + instanceName + ' already exists');
 

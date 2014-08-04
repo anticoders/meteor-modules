@@ -1,10 +1,8 @@
 
 var propertiesOfInstance = [ 'settings', 'require', 'define', 'Template', 'i18n' ];
 
-applyFactory = function (factory, instance, module, options) {
+applyFactory = function (factory, instance, module) {
   var args = [], instanceName = '';
-
-  options = options || {};
 
   if (typeof instance === 'string') {
     instanceName = instance; instance = module.instancesByName[instanceName];
@@ -20,13 +18,7 @@ applyFactory = function (factory, instance, module, options) {
     return instance[name];
   }));
 
-  if (options.isPlugin) {
-    factory.apply({}, args);
-  } else {
-    instance.require(module.plugins, function ($instance) {
-      factory.apply({}, args);
-    });
-  }
+  factory.apply({}, args);
 }
 
 getFactoryArgsString = function (moduleName) {

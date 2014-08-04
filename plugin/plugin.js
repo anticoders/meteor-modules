@@ -12,9 +12,7 @@ Plugin.registerSourceHandler('module.json', function (compileStep) {
     // TODO: throw error
   }
 
-  _.each(config.plugins, function (name) {
-    contents += 'Module(' + JSON.stringify(moduleName) + ').usePlugin(' + JSON.stringify(name) + ');\n';
-  });
+  contents += 'Module(' + JSON.stringify(moduleName) + ').configure(' + JSON.stringify(config, undefined, 2) + ');\n';
 
   compileStep.addJavaScript({
     path       : compileStep.inputPath,

@@ -21,6 +21,7 @@ Package.on_use(function (api) {
     'i18n.js',
     'module.js',
     'publicAPI.js',
+    'plugins.js',
   ]);
 
   api.add_files([

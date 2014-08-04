@@ -24,7 +24,12 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.extend = function (factory) {
-    module.addToRecipies(factory);
+    module.require('$config', function ($config) {
+      module.require(module.plugins.concat($config.plugins), function () {
+        console.log('plugins are ready');
+        module.addToRecipies(factory);
+      });
+    });
   };
 
   moduleAPI.depend = function (deps) {
@@ -39,17 +44,24 @@ Module = function (moduleName, widgetName) {
     };
   };
 
-  moduleAPI.usePlugin = function (pluginName) {
-    module.usePlugin(pluginName);
-    //---------------------------------------------
-    plugins.require([pluginName], function (plugin) {
-      module.addToRecipies(function (instance) {
-        instance.define(pluginName, plugin.deps, function () {
-          plugin.body.call(null, instance);
-        });
-      }, { type: 'plugin' });
+  moduleAPI.configure = function (config) {
+    config = config || {};
+    module.define('$config', function () {
+      return _.defaults(config, {
+        name    : moduleName,
+        plugins : [],
+      });
     });
   };
+
+  // load plugins when config is ready
+  module.require('$config', function ($config) {
+    _.each(module.plugins.concat($config.plugins), function (pluginName) {
+      plugins.require([pluginName], function (plugin) {
+        module.define(pluginName, plugin.deps, plugin.body);
+      });
+    });
+  });
 
   moduleAPI.define = function () {
     var args = arguments;
@@ -66,8 +78,12 @@ Module = function (moduleName, widgetName) {
   };
 
   moduleAPI.addTemplate = function (templateName, templateFunc) {
-    module.addToRecipies(function (instance) {
-      instance.__addTemplate__(templateName, templateFunc);
+    module.require('$config', function ($config) {
+      module.require(module.plugins.concat($config.plugins), function () {
+        module.addToRecipies(function (instance) {
+          instance.__addTemplate__(templateName, templateFunc);
+        });
+      });
     });
   };
 

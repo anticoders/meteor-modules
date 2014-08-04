@@ -13,7 +13,9 @@ getOrCreateModule = function (moduleName) {
     instancesByName : {},
     layerFactories  : {},
     factories       : [],
-    plugins         : [],
+    plugins         : [ '$instance', '$ready', '$template' ],
+    require         : wrapRequire(manager),
+    define          : wrapDefine(manager),
     i18n            : i18n.namespace(),
 
     addToRecipies: function (factory, options) {
@@ -99,6 +101,7 @@ getOrCreateModule = function (moduleName) {
         },
 
         __addTemplate__: function (templateName, templateFunc) {
+          console.log('adding', templateName, 'to', instanceName);
           var _Template = instance.Template;
 
           if (!_Template) return;
@@ -141,40 +144,8 @@ getOrCreateModule = function (moduleName) {
 
   // built-in definitions
 
-  // do we want to make this one optional?
-  module.addToRecipies(function (instance) {
-    var _Template = function Template () {};
-
-    if (typeof Template !== 'undefined') {
-      _Template.prototype = Object.create(Template.prototype);
-      _Template.prototype.constructor = _Template;
-    }
-
-    instance.Template = { prototype: _Template.prototype };
-  }, { type: 'plugin' });
-
-  module.addToRecipies(function (instance, settings) {
-    instance.i18n = module.i18n;
-    instance.define('$instance', function () {
-      return instance; // useful for plugins
-    });
-  }, { type: 'plugin' });
-
-  var readyDependency = new Deps.Dependency();
-  var isReady = false;
-
-  module.addToRecipies(function (instance) {
-    instance.ready = function () {
-      readyDependency.depend();
-      return isReady;
-    }
-  }, { type: 'plugin' });
-
-  module.addToRecipies(function () {
-    if (!isReady) {
-      isReady = true;
-      readyDependency.changed();
-    }
+  module.define('$module', [], function () {
+    return module;
   });
 
   if (moduleName) {

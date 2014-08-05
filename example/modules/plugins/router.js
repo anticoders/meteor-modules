@@ -1,6 +1,6 @@
 
-Module.registerPlugin('router', [ '$module' ], function ($module) {
+Module.registerPlugin('custom', [ '$module' ], function ($module) {
   $module.addToRecipies(function (instance) {
-    instance.router = {};
+    
   });
 });

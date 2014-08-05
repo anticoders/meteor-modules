@@ -25,10 +25,10 @@ Module.registerPlugin('$template', [ '$module' ], function ($module) {
       }
 
       var tmpl = new _Template.prototype.constructor;
-      var templateNameWithPrefix = settings.__name__ + '_' + templateName;
+      var templateFullName = instance.getTemplateFullName(templateName);
 
       tmpl.__viewName     = 'Template.' + templateName;
-      tmpl.__templateName = templateNameWithPrefix;
+      tmpl.__templateName = templateFullName;
       tmpl.__render       = templateFunc;
 
       _Template[templateName] = tmpl;
@@ -36,9 +36,13 @@ Module.registerPlugin('$template', [ '$module' ], function ($module) {
       _Template.prototype[templateName] = tmpl;
 
       if (typeof Template !== 'undefined') {
-        Template[templateNameWithPrefix] = tmpl;
+        Template[templateFullName] = tmpl;
       }
     };
+
+    UI.registerHelper(settings.__name__, function () {
+      return _Template;
+    });
 
     // "global" helpers scoped to the module namespace
 
@@ -47,6 +51,13 @@ Module.registerPlugin('$template', [ '$module' ], function ($module) {
         throw new Error("Helper " + helperName + " already exists.");
       }
       _Template.prototype[helperName] = helperFunc;
+    };
+
+    instance.getTemplateFullName = function (templateName) {
+      if (!settings.__name__) {
+        return templateName;
+      }
+      return settings.__name__ + '_' + templateName;
     };
 
   });

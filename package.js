@@ -21,8 +21,12 @@ Package.on_use(function (api) {
     'i18n.js',
     'module.js',
     'methods.js',
+
+    // PLUGINS
+
     'plugins.js',
     'livedata.js',
+    'router.js',
   ]);
 
   api.add_files([

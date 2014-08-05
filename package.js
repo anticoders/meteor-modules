@@ -25,6 +25,7 @@ Package.on_use(function (api) {
     // PLUGINS
 
     'plugins.js',
+    'template.js',
     'livedata.js',
     'router.js',
   ]);

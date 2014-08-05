@@ -5,16 +5,43 @@
       "modules": {
         "path": ".."
       },
-      "iron-router": {}
+      "unimark": {
+        "git": "https://github.com/apendua/meteor-unimark.git",
+        "branch": "master"
+      },
+      "iron-router": {},
+      "fake": {},
+      "moment": {},
+      "timestamp": {}
     },
     "packages": {
       "modules": {
         "path": ".."
       },
+      "unimark": {
+        "git": "https://github.com/apendua/meteor-unimark.git",
+        "branch": "master",
+        "commit": "4cb98f66f0d5e85279b870a62e8a6cf8cc0691d3"
+      },
       "iron-router": {
         "git": "https://github.com/EventedMind/iron-router.git",
         "tag": "v0.8.2",
         "commit": "05415a8891ea87a00fb1e2388585f2ca5a38e0da"
+      },
+      "fake": {
+        "git": "https://github.com/subhog/meteor-fake.git",
+        "tag": "v0.3.4",
+        "commit": "e5393ddad6fbee5638e5c430666693828b403abc"
+      },
+      "moment": {
+        "git": "https://github.com/acreeger/meteor-moment.git",
+        "tag": "v2.6.0",
+        "commit": "26156df681750fd6e6ed77043eef32b6653ebbdf"
+      },
+      "timestamp": {
+        "git": "https://github.com/subhog/meteor-timestamp.git",
+        "tag": "v0.1.1",
+        "commit": "474419e8707f55b4b1719108824b636bead623c6"
       },
       "amd-manager": {
         "git": "https://github.com/apendua/meteor-amd-manager.git",

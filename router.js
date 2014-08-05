@@ -98,7 +98,7 @@ Module.registerPlugin('router', [ '$module', '$template' ], function ($module) {
           options.controller = controller;
           
           if (_.isString(options.template)) {
-            options.template = instance.getTemplateName(options.template);
+            options.template = instance.getTemplateFullName(options.template);
           }
 
           Router.route(instance.getRouteFullName(routeName), options);

@@ -3,6 +3,12 @@
     "modules": {
       "path": ".."
     },
-    "iron-router": {}
+    "unimark": {
+      "git": "https://github.com/apendua/meteor-unimark.git"
+    },
+    "iron-router": {},
+    "fake": {},
+    "moment": {},
+    "timestamp": {}
   }
 }

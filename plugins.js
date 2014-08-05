@@ -13,6 +13,10 @@ Module.registerPlugin('$template', [ '$module' ], function ($module) {
 
     var _Template = { prototype: constructor.prototype };
 
+    if (typeof Template !== 'undefined') {
+      _Template.__create__ = _.bind(Template.__create__, Template);
+    }
+
     instance.Template = _Template;
 
     instance.__addTemplate__ = function (templateName, templateFunc) {

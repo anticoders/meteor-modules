@@ -100,36 +100,6 @@ getOrCreateModule = function (moduleName) {
           applyFactory(factory, instance, module);
         },
 
-        __addTemplate__: function (templateName, templateFunc) {
-          var _Template = instance.Template;
-
-          // TODO: print warning
-          if (!_Template) return;
-
-          // TODO: better error messages
-          if (_Template.hasOwnProperty(templateName)) {
-            if (_Template[templateName].__makeView)
-              throw new Error("There are multiple templates named '" + templateName + "'. Each template needs a unique name.");
-            throw new Error("This template name is reserved: " + templateName);
-          }
-
-          // TODO: use prefixed name
-
-          var tmpl = new _Template.prototype.constructor;
-          var templateNameWithPrefix = settings.__name__ + '_' + templateName;
-
-          tmpl.__viewName     = 'Template.' + templateName;
-          tmpl.__templateName = templateNameWithPrefix;
-          tmpl.__render       = templateFunc;
-
-          _Template[templateName] = tmpl;
-
-          _Template.prototype[templateName] = tmpl;
-
-          if (typeof Template !== 'undefined') {
-            Template[templateNameWithPrefix] = tmpl;
-          }
-        },
       };
 
       _.each(module.factories, function (factory) {

@@ -22,6 +22,7 @@ Package.on_use(function (api) {
     'module.js',
     'methods.js',
     'plugins.js',
+    'livedata.js',
   ]);
 
   api.add_files([

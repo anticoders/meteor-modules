@@ -21,3 +21,5 @@ MyBlog = Module('blog').as('blog', {
     },
   },
 });
+
+$global = Module('$global').as('myApp');

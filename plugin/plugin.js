@@ -3,13 +3,18 @@ var path = Npm.require('path');
 
 Plugin.registerSourceHandler('module.json', function (compileStep) {
 
+  var options = parseModuleOptions(compileStep);
   var isBrowser = compileStep.arch.match(/^browser(\.|$)/);
   var config = JSON.parse(compileStep.read().toString('utf8'));
   var contents = '';
-  var moduleName = config.name;
+  var moduleName = options.module;
 
-  if (!moduleName) {
-    // TODO: throw error
+  if (config.name) {
+    if (options.name === '$global') {
+      moduleName = config.name;
+    } else if (config.name !== options.module) {
+      throw new Error('module name mismatch');
+    }
   }
 
   contents += 'Module(' + JSON.stringify(moduleName) + ').configure(' + JSON.stringify(config, undefined, 2) + ');\n';
@@ -116,22 +121,26 @@ function parseModuleOptions(compileStep) {
     options.module = compileStep.packageName;
   }
 
-  if (!options.module) {
-    parts = compileStep.inputPath.split(path.sep);
-    index = _.indexOf(parts, 'modules');
-    if (index < 0 || index === parts.length - 1) {
-      options.module = parts[parts.length - 1].replace(regExp, '');
-    } else {
-      options.module = parts[index + 1].replace(regExp, '');
-    }
-  }
-
   if (!options.layer) {
     parts = compileStep.inputPath.split(path.sep);
     index = _.indexOf(parts, 'layers');
     if (index >= 0 && index < parts.length - 1) {
       options.layer = parts[index + 1].replace(regExp, '');
     }
+  }
+
+  if (!options.module) {
+    parts = compileStep.inputPath.split(path.sep);
+    index = _.indexOf(parts, 'modules');
+    if (index >= 0 && index < parts.length - 1) {
+      options.module = parts[index + 1].replace(regExp, '');
+    } else if (!options.layer) {
+      options.module = parts[parts.length - 1].replace(regExp, '');
+    }
+  }
+
+  if (!options.module) {
+    options.module = '$global';
   }
 
   return options;

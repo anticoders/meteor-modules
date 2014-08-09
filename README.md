@@ -18,19 +18,21 @@ meteorApp
     regularFile.js
     ...
   server
-  modules
-    module1
-      file1.module_js
-      file2.module_html
-    module2
-      file3.module_js
-      file4.module_html
+  layers
+    layer1
+      file1.module.js
+      file2.module.html
+    layer2
+      file3.module.js
+      file4.module.html
 ```
 
-Note that due to the way the meteor bundler works, the extensions of your module files need to be changed to `.module_js` and `.module_html` (`.module_css` is not suported for the moment). To download and execute the module code on the client, use
+Note that due to the way the meteor bundler works, the extensions of your module files need to be changed to `.module.js` and `.module.html` (`.module_css` is not suported for the moment). To download and execute the module code on the client, use
 
 ```javascript
-require('module1', function () {
-  console.log('module1 is now ready to use');
+myApp = Module('$global').as('myApp');
+
+myApp.require('layer1', function () {
+  console.log('layer1 is now ready to use');
 });
 ```

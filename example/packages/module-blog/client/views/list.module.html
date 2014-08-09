@@ -1,0 +1,13 @@
+<template name="list">
+
+  {{#each articles}}
+    <a href="{{pathFor 'article' ref='home'}}" class="content-list-item">
+      <div>
+        <small class="text-muted">{{date publishedAt}}</small>
+        <h3>{{#markdown}}{{title}}{{/markdown}}</h3>
+        <p>{{#markdown}}{{summary}}{{/markdown}}</p>
+      </div>
+    </a>
+  {{/each}}
+
+</template>

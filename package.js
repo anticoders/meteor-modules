@@ -3,34 +3,36 @@ Package.describe({
 });
 
 Package._transitional_registerBuildPlugin({
-  name: 'compileSourceCodeForModules',
-  use: [],
+  name: 'compileImpactModules',
+  use: [ 'spacebars-compiler', 'underscore' ],
   sources: [
-    'plugins/source/sourcePlugin.js',
-  ]
-});
-
-Package._transitional_registerBuildPlugin({
-  name: 'compileTemplatesForModules',
-  use: [ 'spacebars-compiler' ],
-  sources: [
-    'plugins/template/html_scanner.js', // this is copy/pasted from meteor
-    'plugins/template/templatePlugin.js',
+    'utils.js',
+    'plugin/html_scanner.js', // this is copy/pasted from meteor
+    'plugin/plugin.js',
   ]
 });
 
 Package.on_use(function (api) {
-  api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);
+  api.use(['deps', 'underscore', 'templating', 'webapp', 'amd-manager'], ['client', 'server']);
 
   api.add_files([
-    'manager.js',
+    'utils.js',
     'require.js',
+    'i18n.js',
+    'module.js',
+    'methods.js',
+
+    // PLUGINS
+
+    'plugins.js',
+    'template.js',
+    'livedata.js',
+    'router.js',
   ]);
 
   api.add_files([
     'fileServer.js'
   ], 'server');
 
-  api.export('require');
-  api.export('define');
+  api.export('Module');
 });

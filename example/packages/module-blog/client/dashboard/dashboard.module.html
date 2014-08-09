@@ -1,0 +1,34 @@
+<template name="dashboard">
+
+
+  <div class="adminHeader">
+    <div class="adminTitle">Blog articles</div>
+    <!-- <div class="adminTabs"> -->
+      <!-- <a href="/blog/edit" class="adminTabButton">New article</a> -->
+      <!-- <a href="{{pathFor 'blog_dashboard' published=true}}" class="adminTab">Published</a> -->
+      <!-- <a href="{{pathFor 'blog_dashboard' published=false}}" class="adminTab">Unpublished</a> -->
+    <!-- </div> -->
+  </div>
+
+
+  <a href="/blog/edit" class="adminMenuButton">New article</a>
+
+  <br/><br/>
+
+  <div class="adminBox">
+
+
+      {{#each articles}}
+        <a href="{{pathFor 'edit'}}" class="adminTableRow">
+          <span class="adminTableRowTop">
+            <span class="">{{date createdAt}}</span>
+          </span>
+          <span class="adminTableRowContent">
+            <span class="">{{ensureTitle}}</span>
+          </span>
+        </a>
+      {{/each}}
+
+  </div>
+
+</template>

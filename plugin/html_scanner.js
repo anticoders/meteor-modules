@@ -32,7 +32,7 @@ html_scanner = {
     var results = html_scanner._initResults();
     var rOpenTag = /^((<(template|head|body)\b)|(<!--)|(<!DOCTYPE|{{!)|$)/i;
 
-    var parseOptionsFromComment = function (comment) {
+    function parseOptionsFromComment (comment) {
       var result = /\s*@modules\s*(.*)/.exec(comment);
       var regexp = /\s*([\w]+)\s*=\s*("[^"]*"|\d+)/g;
       var match;
@@ -60,8 +60,9 @@ html_scanner = {
       var tagStartIndex = index;
       advance(match.index + match[0].length);
 
-      if (! matchToken)
+      if (!matchToken)
         break; // matched $ (end of file)
+
       if (matchTokenComment === '<!--') {
         // top-level HTML comment
         var commentEnd = /--\s*>/.exec(rest);
@@ -74,6 +75,7 @@ html_scanner = {
 
         continue;
       }
+
       if (matchTokenUnsupported) {
         switch (matchTokenUnsupported.toLowerCase()) {
         case '<!doctype':
@@ -129,8 +131,6 @@ html_scanner = {
 
   _initResults: function() {
     var results = {};
-    results.head = '';
-    results.body = '';
     results.js = '';
     return results;
   },
@@ -144,34 +144,17 @@ html_scanner = {
     contentsStartIndex += m[1].length;
     contents = m[2];
 
-    // do we have 1 or more attribs?
-    var hasAttribs = false;
-    for(var k in attribs) {
-      if (attribs.hasOwnProperty(k)) {
-        hasAttribs = true;
-        break;
-      }
-    }
-
-    if (tag === "head") {
-      if (hasAttribs)
-        throwParseError("Attributes on <head> not supported");
-      results.head += contents;
-      return;
-    }
-
-    // <body> or <template>
-
     try {
       if (tag === "template") {
         var name = attribs.name;
-        if (! name)
+        
+        if (!name)
           throwParseError("Template has no 'name' attribute");
 
-        if (Spacebars.isReservedName(name))
+        if (SpacebarsCompiler.isReservedName(name))
           throwParseError("Template can't be named \"" + name + "\"");
 
-        var renderFuncCode = Spacebars.compile(
+        var renderFuncCode = SpacebarsCompiler.compile(
           contents, {
             isTemplate: true,
             sourceName: 'Template "' + name + '"'
@@ -179,11 +162,12 @@ html_scanner = {
 
         options = options || {};
         
-        results.js += "Template.__define__(" + JSON.stringify(name) +
-          ", " + renderFuncCode + ", " + JSON.stringify(options) + ");\n";
-        
-      } else {
-        // body is not suported
+        if (options.layer) {
+          results.js += "Module(" + JSON.stringify(options.module) + ").layer(" + JSON.stringify(options.layer) + ").addTemplate(" + JSON.stringify(name) + ", " + renderFuncCode + ");\n";
+        } else {
+          results.js += "Module(" + JSON.stringify(options.module) + ").addTemplate(" + JSON.stringify(name) + ", " + renderFuncCode + ");\n";
+        }
+
       }
     } catch (e) {
       if (e.scanner) {

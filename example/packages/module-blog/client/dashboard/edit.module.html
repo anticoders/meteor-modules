@@ -1,0 +1,43 @@
+<template name="edit">
+
+  {{#with article}}
+
+
+
+    <div class="zenBox">
+      <div class="zenMenuArea">
+        Published: <span class="crater-toggle blog_edit_publishedField" data-value="{{#if published}}true{{else}}false{{/if}}"></span><br/>
+        Seo: <input type="text" class="blog_edit_trigger" id="blog_edit_seoField" placeholder="seo" value="{{seo}}">
+      </div>
+      <input class="zenTitleInput blog_edit_trigger" type="text" value="{{title}}" id="blog_edit_titleField" placeholder="title"/>
+      <hr class="zenLine"/>
+      <!-- <hr class="zenLine"/> -->
+      <textarea class="zenTextarea zenTextareaSmaller blog_edit_trigger" id="blog_edit_summaryField" placeholder="summary">{{summary}}</textarea>
+      <hr class="zenLine"/>
+      <textarea class="zenTextarea blog_edit_trigger" id="blog_edit_contentField" placeholder="the article content should go here">{{content}}</textarea>
+    </div>
+
+
+
+
+    <div class="zenBar">
+      <div class="zenBarInner">
+
+        <span class="zenLeft">
+          <a href="{{pathFor 'dashboard'}}" class="zenButton" title="Article list"><i class="fa fa-times"></i></a>
+          <a href="{{pathFor 'article'}}" class="zenButton" title="Preview article"><i class="fa fa-eye"></i></a>
+          <span class="zenButton blog_edit_addMediaButton" title="Add media"><i class="fa fa-picture-o"></i></span>
+        </span>
+
+        <span class="zenRight">
+          {{#constant}}
+          <span class="zenButton blog_edit_savingButton"></span>
+          {{/constant}}
+        </span>
+      
+      </div>
+    </div>
+
+  {{/with}}
+
+</template>

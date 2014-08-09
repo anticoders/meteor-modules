@@ -4,5 +4,8 @@
   "homepage": "https://github.com/anticoders/meteor-modules",
   "author": "Tomasz Lenarcik (https://github.com/apendua), Hubert Orlik-Grzesik (https://github.com/subhog)",
   "version": "0.0.2",
-  "git": "https://github.com/anticoders/meteor-modules.git"
+  "git": "https://github.com/anticoders/meteor-modules.git",
+  "packages": {
+    "amd-manager": {}
+  }
 }

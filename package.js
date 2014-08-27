@@ -1,6 +1,6 @@
 Package.describe({
   name:     "anticoders:modules",
-  version:  "0.1.0",
+  version:  "0.1.1",
   summary:  "A lightweight module manager for Meteor",
   git:      "https://github.com/anticoders/meteor-modules.git",
 });

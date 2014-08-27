@@ -1,5 +1,8 @@
 Package.describe({
-  summary: "A lightweight module manager for Meteor",
+  name:     "anticoders:modules",
+  version:  "0.1.0",
+  summary:  "A lightweight module manager for Meteor",
+  git:      "https://github.com/anticoders/meteor-modules.git",
 });
 
 Package._transitional_registerBuildPlugin({

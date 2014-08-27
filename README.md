@@ -5,7 +5,7 @@ A simple solution for asynchronous modules download.
 ## Instalation
 
 ```
-mrt add modules
+meteor add anticoders:modules
 ```
 
 ## Basic usage

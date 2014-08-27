@@ -1,6 +1,6 @@
 Package.describe({
   name:     "anticoders:modules",
-  version:  "0.1.3",
+  version:  "0.1.4",
   summary:  "A lightweight module manager for Meteor",
   git:      "https://github.com/anticoders/meteor-modules.git",
 });
@@ -17,7 +17,8 @@ Package._transitional_registerBuildPlugin({
 
 Package.on_use(function (api) {
   api.versionsFrom('0.9.0');
-  api.use(['deps', 'underscore', 'templating', 'webapp', 'apendua:amd-manager'], ['client', 'server']);
+  api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);
+  api.use('apendua:amd-manager@0.0.4', ['client', 'server']);
 
   api.add_files([
     'utils.js',

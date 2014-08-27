@@ -118,7 +118,7 @@
     ],
     [
       "templating",
-      "1.0.4-cordova1"
+      "1.0.4"
     ],
     [
       "ui",
@@ -130,7 +130,7 @@
     ],
     [
       "webapp",
-      "1.0.2-a-simple-test"
+      "1.0.2"
     ]
   ],
   "pluginDependencies": [

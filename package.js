@@ -15,6 +15,8 @@ Package._transitional_registerBuildPlugin({
   ]
 });
 
+// TODO: add wek dependency to iron:router
+
 Package.on_use(function (api) {
   api.versionsFrom('0.9.0');
   api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);

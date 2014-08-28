@@ -1,5 +1,6 @@
 Package.describe({
-  summary: "Impact Blog"
+  summary: "Impact Blog",
+  version: "0.0.0"
 });
 
 Package.on_use(function (api, where) {
@@ -11,18 +12,17 @@ Package.on_use(function (api, where) {
   api.use([
     'accounts-base',
     'deps',
-    'fake',
     'handlebars',
-    'iron-router',
     'less',
-    'moment',
     'templating',
-    'timestamp',
     'underscore',
-    'unimark',
+    //'mrt:timestamp',
+    'mrt:moment',
+    'iron:router',
+    'anti:mark',
+    'anti:fake',
+    'anti:modules',
   ], both);
-
-  api.use('modules', both);
 
   api.add_files([
     'both/module.json',

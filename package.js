@@ -18,7 +18,7 @@ Package._transitional_registerBuildPlugin({
 Package.on_use(function (api) {
   api.versionsFrom('0.9.0');
   api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);
-  api.use('apendua:amd-manager@0.0.4', ['client', 'server']);
+  api.use('amd:manager@0.0.5', ['client', 'server']);
 
   api.add_files([
     'utils.js',

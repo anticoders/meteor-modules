@@ -1,13 +1,13 @@
 
 Module.registerPlugin('router', [ '$module', '$template' ], function ($module) {
 
-  if (!Package['iron-router']) {
-    console.warn('Plugin `router` requires `iron-router` smart package to work properly.')
+  if (!Package['iron:router']) {
+    console.warn('Plugin `router` requires `iron:router` smart package to work properly.')
     return;
   }
 
-  var RouteController = Package['iron-router'].RouteController;
-  var Router = Package['iron-router'].Router;
+  var RouteController = Package['iron:router'].RouteController;
+  var Router = Package['iron:router'].Router;
   var slash = /^\//;
 
   $module.addToRecipies(function (instance, settings) {

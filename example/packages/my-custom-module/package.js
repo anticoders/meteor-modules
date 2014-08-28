@@ -1,16 +1,12 @@
 
 Package.describe({
   summary: "Example module",
+  version: "0.0.0",
 });
 
 Package.on_use(function (api) {
-  api.use(['modules', 'underscore'], ['client', 'server']);
+  api.use(['anti:modules', 'underscore'], ['client', 'server']);
   
-  api.add_files([
-
-
-  ])
-
   api.add_files([
 
     // LAYERS

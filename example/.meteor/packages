@@ -4,12 +4,11 @@
 # but you can also edit it by hand.
 
 standard-app-packages
-modules
-myCustomModule
-iron-router
-fake
-moment
-timestamp
+my-custom-module
 module-blog
 showdown
-unimark
+iron:router
+mrt:moment
+anti:fake
+anti:mark
+anti:modules

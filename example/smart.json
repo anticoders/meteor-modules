@@ -1,14 +1,7 @@
 {
   "packages": {
-    "modules": {
+    "anti:modules": {
       "path": ".."
-    },
-    "unimark": {
-      "git": "https://github.com/apendua/meteor-unimark.git"
-    },
-    "iron-router": {},
-    "fake": {},
-    "moment": {},
-    "timestamp": {}
+    }
   }
 }

@@ -1,6 +1,6 @@
 Package.describe({
   name:     "anti:modules",
-  version:  "0.1.5",
+  version:  "0.1.6",
   summary:  "A lightweight module manager for Meteor",
   git:      "https://github.com/anticoders/meteor-modules.git",
 });

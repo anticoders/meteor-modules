@@ -2,7 +2,7 @@ accounts-base@1.0.1
 amd:manager@0.0.5
 anti:fake@0.4.1
 anti:mark@0.6.1
-anti:modules@0.1.6
+anti:modules@0.1.7
 application-configuration@1.0.1
 autoupdate@1.0.6
 binary-heap@1.0.0

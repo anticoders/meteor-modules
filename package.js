@@ -1,6 +1,6 @@
 Package.describe({
   name:     "anti:modules",
-  version:  "0.1.6",
+  version:  "0.1.7",
   summary:  "A lightweight module manager for Meteor",
   git:      "https://github.com/anticoders/meteor-modules.git",
 });
@@ -19,7 +19,7 @@ Package._transitional_registerBuildPlugin({
 
 Package.on_use(function (api) {
   api.versionsFrom('0.9.1');
-  api.use(['deps', 'underscore', 'templating', 'webapp'], ['client', 'server']);
+  api.use(['deps', 'underscore', 'blaze', 'webapp'], ['client', 'server']);
   api.use('amd:manager@0.0.5', ['client', 'server']);
 
   api.add_files([

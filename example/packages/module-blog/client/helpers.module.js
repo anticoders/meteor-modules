@@ -4,7 +4,7 @@ Blog.registerHelper('date', function(date){
   return moment(date).format('DD MMM YYYY');
 });
 
-Blog.registerHelper('admin', Template.__create__('admin', function(options) {
+Blog.registerHelper('admin', new Template('admin', function(options) {
   var view = this;
   if (Meteor.user() && Meteor.user().admin) {
     return view.templateContentBlock;
@@ -12,7 +12,7 @@ Blog.registerHelper('admin', Template.__create__('admin', function(options) {
   return view.templateElseContentBlock;
 }));
 
-Blog.registerHelper('user', Template.__create__('user', function(options) {
+Blog.registerHelper('user', new Template('user', function(options) {
   var view = this;
   if (Meteor.userId()) {
     return view.templateContentBlock;

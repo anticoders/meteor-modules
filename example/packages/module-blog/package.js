@@ -9,6 +9,8 @@ Package.on_use(function (api, where) {
   var server = 'server';
   var both = [client, server];
 
+  api.versionsFrom('0.9.1');
+
   api.use([
     'accounts-base',
     'deps',

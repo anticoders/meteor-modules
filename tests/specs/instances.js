@@ -1,6 +1,7 @@
-describe('benchmark test suite', function () {
-  it('should just work', function (done, server) {
+describe('Instances', function () {
 
+  it('should be able to instantiate a previously defined module', function (done, server) {
+    
     server.eval(function () {
       emit('done', Meteor.release);
     });
@@ -11,4 +12,5 @@ describe('benchmark test suite', function () {
     });
 
   });
+
 });

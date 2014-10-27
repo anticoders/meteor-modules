@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^2.5.0",
-    "laika": "apendua/laika#webdriver"
+    "laika": "apendua/laika#webdriver",
+    "mocha": "^2.0.1"
   }
 }

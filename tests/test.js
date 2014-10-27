@@ -24,6 +24,13 @@ program
     runLaika(this.parent);
   });
 
+program
+  .command('unit')
+  .description('run unit tests')
+  .action(function () {
+    runUnitTests(this.parent);
+  });
+
 program.parse(process.argv);
 
 function runLaika(options) {
@@ -48,3 +55,27 @@ function runLaika(options) {
     grep     : options.grep,
   });
 }
+
+function runUnitTests(options) {
+
+  var Mocha = require('mocha');
+  var mocha = new Mocha();
+
+  var done = false;
+
+  mocha.suite.on('pre-require', function (context) {
+    console.log(context.getOrCreateModule);
+    if (done) return;
+    done = true;
+    console.log('PRE-REQUIRE');
+    require('../module');
+    console.log(context.getOrCreateModule);
+  });
+
+  fs.readdirSync('unit').forEach(function (file) {
+    mocha.addFile(path.join('unit', file));
+  });
+
+  mocha.run();
+}
+

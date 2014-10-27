@@ -21,7 +21,7 @@ program
   .description('run laika test suites')
   .action(function () {
     process.chdir(path.resolve(__dirname, '..', 'example'));
-    runLaika(this);
+    runLaika(this.parent);
   });
 
 program.parse(process.argv);

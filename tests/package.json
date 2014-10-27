@@ -5,7 +5,7 @@
   "author": "Tomasz Lenarcik (apendua@gmail.com)",
   "license": "MIT",
   "dependencies": {
-    "commander": "^2.3.0",
+    "commander": "^2.5.0",
     "laika": "apendua/laika#webdriver"
   }
 }

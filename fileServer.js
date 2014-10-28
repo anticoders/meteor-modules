@@ -9,6 +9,5 @@ WebApp.connectHandlers.stack.splice (0, 0, {
     res.end(Module(path[1]).compile(path[2]));
 
   }),
-
 });
 

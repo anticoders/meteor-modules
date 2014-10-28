@@ -27,7 +27,9 @@ Package.on_use(function (api) {
     'require.js',
     'i18n.js',
     'module.js',
+    'manager.js',
     'methods.js',
+    'index.js',
 
     // PLUGINS
 

@@ -10,8 +10,8 @@ Package._transitional_registerBuildPlugin({
   use: [ 'spacebars-compiler', 'underscore' ],
   sources: [
     'utils.js',
-    'plugin/html_scanner.js', // this is copy/pasted from meteor
-    'plugin/plugin.js',
+    'build_plugin/html_scanner.js', // this is copy/pasted from meteor
+    'build_plugin/plugin.js',
   ]
 });
 
@@ -33,10 +33,11 @@ Package.on_use(function (api) {
 
     // PLUGINS
 
-    'plugins.js',
-    'template.js',
-    'livedata.js',
-    'router.js',
+    'plugins/instance.js',
+    'plugins/ready.js',
+    'plugins/template.js',
+    'plugins/livedata.js',
+    'plugins/router.js',
   ]);
 
   api.add_files([

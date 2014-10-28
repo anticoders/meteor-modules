@@ -1,14 +1,4 @@
 
-// built-in plugins
-
-Module.registerPlugin('$instance', [ '$module' ], function ($module) {
-  $module.addToRecipies(function (instance) {
-    instance.define('$instance', function () {
-      return instance;
-    });
-  });
-});
-
 Module.registerPlugin('$ready', [ '$module' ], function ($module) {
   var readyDependency = new Deps.Dependency();
   var isReady = false;

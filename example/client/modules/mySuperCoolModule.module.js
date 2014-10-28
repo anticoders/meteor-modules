@@ -1,3 +1,5 @@
+MySuperCoolModule.subscribe('documents');
+
 require('someFeature', function (feature) {
   feature.sayHi();
 });

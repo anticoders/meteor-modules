@@ -1,2 +1,2 @@
 
-MySuperCoolModule.posts = MySuperCoolModule.collection('posts');
+MySuperCoolModule.documents = MySuperCoolModule.collection('documents');

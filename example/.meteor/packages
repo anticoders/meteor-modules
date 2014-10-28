@@ -5,10 +5,7 @@
 
 standard-app-packages
 my-custom-module
-module-blog
 showdown
 iron:router
 mrt:moment
-anti:fake
-anti:mark
 anti:modules

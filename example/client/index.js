@@ -1,5 +1,6 @@
 
 Router.onBeforeAction('loading');
+
 Router.configure({
   loadingTemplate: 'loading'
 });

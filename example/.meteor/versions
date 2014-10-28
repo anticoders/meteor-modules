@@ -1,7 +1,4 @@
-accounts-base@1.1.1
 amd:manager@0.0.5
-anti:fake@0.4.1
-anti:mark@0.6.1
 anti:modules@0.1.7
 application-configuration@1.0.2
 autoupdate@1.1.1
@@ -20,7 +17,6 @@ ejson@1.0.3
 fastclick@1.0.0
 follower-livedata@1.0.1
 geojson-utils@1.0.0
-handlebars@1.0.0
 html-tools@1.0.1
 htmljs@1.0.1
 http@1.0.6
@@ -31,16 +27,13 @@ iron:layout@0.4.1
 iron:router@0.9.4
 jquery@1.0.0
 json@1.0.0
-less@1.0.9
 livedata@1.0.10
-localstorage@1.0.0
 logging@1.0.3
 meteor-platform@1.1.1
 meteor@1.1.1
 minifiers@1.1.0
 minimongo@1.0.3
 mobile-status-bar@1.0.0
-module-blog@0.0.0
 mongo@1.0.6
 mrt:moment@2.8.1
 my-custom-module@0.0.0
@@ -52,7 +45,6 @@ reactive-var@1.0.2
 reload@1.1.0
 retry@1.0.0
 routepolicy@1.0.1
-service-configuration@1.0.1
 session@1.0.2
 showdown@1.0.1
 spacebars-compiler@1.0.2

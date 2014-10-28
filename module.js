@@ -31,7 +31,7 @@ ModuleFactory.prototype.addToRecipies = function (factory, options) {
     body: factory,
   });
   _.each(_.keys(module.instancesByName), function (name) {
-    applyFactory(factory, name, module, { isPlugin: options.type === 'plugin' });
+    applyFactory(factory, name, module);
   });
 };
 
@@ -111,9 +111,7 @@ ModuleFactory.prototype.instantiate = function (instanceName, settings) {
   };
 
   _.each(module.factories, function (factory) {
-    applyFactory(factory.body, instanceName, module, {
-      isPlugin: factory.type === 'plugin'
-    });
+    applyFactory(factory.body, instanceName, module);
   });
 
   return module.instancesByName[instanceName];

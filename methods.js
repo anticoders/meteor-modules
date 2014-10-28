@@ -5,7 +5,7 @@ ModuleMethods = function ModuleMethods () {
   var manager    = new ModuleFactoryManager();
   var plugins    = new AMDManager();
 
-  function Module (moduleName, widgetName) {
+  function Module (moduleName) {
 
     var layerAPIs = {};
 

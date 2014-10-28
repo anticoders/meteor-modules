@@ -1,3 +1,10 @@
+Notes for updating to Meteor 0.9.0
+----------------------------------
+
+This package is now called `anti:modules`.
+
+
+
 # meteor-modules
 
 A simple solution for asynchronous modules download.
@@ -5,12 +12,12 @@ A simple solution for asynchronous modules download.
 ## Instalation
 
 ```
-mrt add modules
+meteor add anti:modules
 ```
 
 ## Basic usage
 
-Put the code of your modules in a folder visible for both server and client. So e.g.
+Put the code of your modules in a folder visible for both server and client. For example:
 
 ```
 meteorApp
@@ -27,7 +34,7 @@ meteorApp
       file4.module.html
 ```
 
-Note that due to the way the meteor bundler works, the extensions of your module files need to be changed to `.module.js` and `.module.html` (`.module_css` is not suported for the moment). To download and execute the module code on the client, use
+Note that due to the way the meteor bundler works, the extensions of your module files need to be changed to `.module.js` and `.module.html` (`.module.css` is not suported yet). To download and execute the module code on the client, use
 
 ```javascript
 myApp = Module('$global').as('myApp');

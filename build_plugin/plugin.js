@@ -1,10 +1,12 @@
 
 var path = Npm.require('path');
+var sourcemap = Npm.require('source-map');
+var webRegExp = /^web(\.|$)/;
 
 Plugin.registerSourceHandler('module.json', function (compileStep) {
 
   var options = parseModuleOptions(compileStep);
-  var isBrowser = compileStep.arch.match(/^browser(\.|$)/);
+  var isBrowser = webRegExp.test(compileStep.arch);
   var config = JSON.parse(compileStep.read().toString('utf8'));
   var contents = '';
   var moduleName = options.module;
@@ -31,7 +33,7 @@ Plugin.registerSourceHandler('module.json', function (compileStep) {
 Plugin.registerSourceHandler('module.js', function (compileStep) {
 
   var options = parseModuleOptions(compileStep);
-  var isBrowser = compileStep.arch.match(/^browser(\.|$)/);
+  var isBrowser = webRegExp.test(compileStep.arch);
   var isModuleJs = path.basename(compileStep.inputPath) === 'module.js';
 
   if (!options.module) {
@@ -40,25 +42,52 @@ Plugin.registerSourceHandler('module.js', function (compileStep) {
   }
 
   var contents = compileStep.read().toString('utf8');
+  var chunks = [];
 
-  if (!isModuleJs) {
-    if (!options.layer) {
-      contents = "Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
+  if (isModuleJs) {
+    compileStep.addJavaScript({
+      path       : compileStep.inputPath, // what is this for?
+      sourcePath : compileStep.inputPath,
+      data       : contents,
+      bare       : isBrowser,
+    });
+    return;
+  }
+
+  if (!options.layer) {
+    chunks.push("Module('" + options.module + "').extend(function (" + getFactoryArgsString(options.module) + ") {\n\n");
+  } else {
+    if (isBrowser) {
+      // on browser, only register this layer
+      chunks.push("Module('" + options.module + "').layer('" + options.layer + "');");
     } else {
-      if (isBrowser) {
-        // on browser, only register this layer
-        contents = "Module('" + options.module + "').layer('" + options.layer + "');";
-      } else {
-        contents = "Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {" + contents + "});";
-      }
+      chunks.push("Module('" + options.module + "').layer('" + options.layer + "').extend(function (" + getFactoryArgsString(options.module) + ") {\n\n");
     }
   }
+
+  if (!options.layer || !isBrowser) {
+
+    numberifyLines(contents, function (line, suffix, num) {
+      chunks.push(new sourcemap.SourceNode(num, 0, compileStep.pathForSourceMap, line));
+      chunks.push(suffix);
+    });
+
+    chunks.push("\n});");
+  }
+
+  // finally generate source map
+
+  var node = new sourcemap.SourceNode(null, null, null, chunks);
+  var results = node.toStringWithSourceMap({
+    file: compileStep.pathForSourceMap
+  });
 
   compileStep.addJavaScript({
     path       : compileStep.inputPath, // what is this for?
     sourcePath : compileStep.inputPath,
-    data       : contents,
-    bare       : !isModuleJs && isBrowser,
+    data       : results.code,
+    sourceMap  : results.map.toString(),
+    bare       : isBrowser
   });
 
 });
@@ -101,6 +130,23 @@ Plugin.registerSourceHandler("module.html", {isTemplate: true}, function (compil
     });
   }
 });
+
+var width = 80;
+var padding = Array(width + 1).join(' ');
+
+var numberifyLines = function (source, f) {
+  var num = 1;
+  var lines = source.split('\n');
+  _.each(lines, function (line) {
+    var suffix = "\n";
+
+    if (line.length <= width && line[line.length - 1] !== "\\") {
+      suffix = padding.slice(line.length, width) + " // " + num + "\n";
+    }
+    f(line, suffix, num);
+    num++;
+  });
+};
 
 function parseModuleOptions(compileStep) {
   var parts, index, regExp = new RegExp('\\.module\\' + path.extname(compileStep.inputPath) + '$');

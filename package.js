@@ -17,6 +17,10 @@ Package._transitional_registerBuildPlugin({
 
 // TODO: add wek dependency to iron:router
 
+Npm.depends({
+  'source-map': '0.1.40'
+});
+
 Package.on_use(function (api) {
   api.versionsFrom('0.9.1');
   api.use(['deps', 'underscore', 'blaze', 'webapp'], ['client', 'server']);

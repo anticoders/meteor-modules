@@ -39,8 +39,6 @@ Package.on_use(function (api) {
     'plugins/instance.js',
     'plugins/ready.js',
     'plugins/template.js',
-    'plugins/livedata.js',
-    'plugins/router.js',
   ]);
 
   api.add_files([

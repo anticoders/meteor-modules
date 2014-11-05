@@ -1,2 +1,2 @@
 
-MySuperCoolModule.documents = MySuperCoolModule.collection('documents');
+MySuperCoolModule.documents = new Mongo.Collection(settings.__name__ + '/documents');

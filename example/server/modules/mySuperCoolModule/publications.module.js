@@ -1,4 +1,4 @@
 
-MySuperCoolModule.publish('documents', function () {
+Meteor.publish(settings.__name__ + '/documents', function () {
   return MySuperCoolModule.documents.find({});
 });

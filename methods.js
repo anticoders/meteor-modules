@@ -25,10 +25,6 @@ ModuleMethods = function ModuleMethods () {
     // short alias
     methods.as = methods.load;
 
-    methods.translateTo = function (language, map) {
-      module.i18n.translateTo(language, map);
-    };
-
     methods.extend = function (factory) {
       module.require('$config', function ($config) {
         module.require(module.plugins.concat($config.plugins), function () {

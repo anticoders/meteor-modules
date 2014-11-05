@@ -11,7 +11,6 @@ ModuleFactory = function ModuleFactory (name) {
   self.plugins         = [ '$instance', '$ready', '$template' ];
   self.require         = wrapRequire(manager);
   self.define          = wrapDefine(manager);
-  self.i18n            = i18n.namespace();
   self.name            = name;
 
   self._requests = {};

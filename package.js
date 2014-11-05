@@ -29,7 +29,6 @@ Package.on_use(function (api) {
   api.add_files([
     'utils.js',
     'require.js',
-    'i18n.js',
     'module.js',
     'manager.js',
     'methods.js',

@@ -29,9 +29,9 @@ Package.on_use(function (api) {
   api.add_files([
     'utils.js',
     'require.js',
-    'module.js',
+    'moduleFactory.js',
     'manager.js',
-    'methods.js',
+    'moduleTool.js',
     'index.js',
 
     // PLUGINS

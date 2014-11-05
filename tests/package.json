@@ -1,0 +1,12 @@
+{
+  "name": "tests",
+  "version": "0.0.0",
+  "description": "tests for meteor-modules",
+  "author": "Tomasz Lenarcik (apendua@gmail.com)",
+  "license": "MIT",
+  "dependencies": {
+    "commander": "^2.5.0",
+    "laika": "apendua/laika#webdriver",
+    "mocha": "^2.0.1"
+  }
+}

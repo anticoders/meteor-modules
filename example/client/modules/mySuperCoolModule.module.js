@@ -1,3 +1,5 @@
+Meteor.subscribe(settings.__name__ + '/documents');
+
 require('someFeature', function (feature) {
   feature.sayHi();
 });

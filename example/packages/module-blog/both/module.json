@@ -1,4 +1,0 @@
-{
-  "name": "blog",
-  "plugins": [ "router", "livedata" ]
-}

@@ -1,27 +1,18 @@
 
+This is not a part of documentation. Just a loose ideas on how the API might look like.
+
+```javascript
 // mySuperModule.json
+
 {
-  "deps": [
-    "namespace",
-    "router",
-  ]
+  "plugins": [ "namespace", "router" ]
 }
 
 // in namespace package:
     
-module && module.registerPlugin('namespace', [], function ($module) {
-  $module.extend(function (instance, settings) {
+Module && Module.registerPlugin('namespace', [ '$module' ], function ($module) {
+  $module.addToRecipies(function (instance, settings) {
     namespace(instance, settings.__name__);
-  });
-});
-
-module.registerPlugin('someFunnyPlugin', [], function ($module) {
-  $module.define('someVeryCoolFeature', function () {
-    return {
-      sayHello: function () {
-        console.log('hello?');
-      },
-    }
   });
 });
 
@@ -49,7 +40,7 @@ module('mySuperModule').extend(function (instance, settings, i18n, require) {
 });
 
 // or maybe
-    
+
 module('mySuperModule').depend([
   'someFunnyFeature'
 ]).extend(function (instance, settings, i18n, require) {
@@ -64,47 +55,25 @@ module('mySuperModule').require(['$module', /* ... */], function ($module) {
   });
 });
 
-// if there is a second parameter ...
-  
-module('mySuperModule', 'editor').extend(function (instance) {
-  instance.editor = {};
+// on the server side
+Module('mySuperModule').layer('dashboard').extend(function () {
+  // ...
 });
-  
-// the extend feature behaves in a different way:
-// instead of adding this factory to the list of all factories
-// we create a separate list of factories named 'editor'
 
-// in addition on the client the following code is added
-  
-Meteor.startup(function () {
-  module('mySuperModule').lazy('editor', [ '$module' ], function ($module) {
-    // how about delaying the execution until someone really needs it?
-    _.each(factories['editor'], function (factory) {
-      $module.extend(factory);
-    });
+// under /modules/mySuperModule/dashboard there will be the following code
+
+Module('mySuperModule').define('dashboard', function (instance) {
+
+  instance.require([ /* ... */ ], function () {
+    // ...
   });
+
+  instance.require([ /* ... */ ], function () {
+    // ...
+  });
+
 });
-  
-// let me explain `lazy`
 
-var requests = {};
-
-$module.lazy = function (name, deps, body) {
-  deps.push( '$requests[' + name + ']');
-  define(name, deps, body);
-}
-
-$module.require = function (deps, body) {
-  _.each(deps, function (name) {
-    if (!requests[name]) {
-      define('$requests[' + name + ']', [], function () {
-        requests[name] = {};
-      });
-    }
-  });
-  return require(deps, body);
-}
-  
 // on the server the factories are not executed automatically, but the response for /modules/mySuperModule/editor will be:
   
 module('mySuperModule').define('editor', [ '$module' ], function ($module) {
@@ -136,4 +105,4 @@ module('mySuperModule').extend(function (instance, settings) {
   });
   
 });
-
+```

@@ -1,5 +1,5 @@
 
-var propertiesOfInstance = [ 'settings', 'require', 'define', 'Template', 'i18n' ];
+var propertiesOfInstance = [ 'settings', 'require', 'define', 'Template' ];
 
 applyFactory = function (factory, instance, module) {
   var instanceName = '';

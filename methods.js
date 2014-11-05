@@ -1,5 +1,5 @@
 
-ModuleMethods = function ModuleMethods () {
+ModuleTool = function ModuleTool () {
 
   var moduleAPIs = {};
   var manager    = new ModuleFactoryManager();

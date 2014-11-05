@@ -1,1 +1,1 @@
-Module = new ModuleMethods();
+Module = new ModuleTool();

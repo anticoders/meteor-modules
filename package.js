@@ -22,7 +22,7 @@ Npm.depends({
 });
 
 Package.on_use(function (api) {
-  api.versionsFrom('0.9.1');
+  api.versionsFrom('1.0');
   api.use(['deps', 'underscore', 'blaze', 'webapp'], ['client', 'server']);
   api.use('amd:manager@0.0.5', ['client', 'server']);
 

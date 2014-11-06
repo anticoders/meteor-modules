@@ -24,7 +24,7 @@ Npm.depends({
 Package.on_use(function (api) {
   api.versionsFrom('1.0');
   api.use(['deps', 'underscore', 'blaze', 'webapp'], ['client', 'server']);
-  api.use('amd:manager@0.0.5', ['client', 'server']);
+  api.use('amd:manager@0.1.1', ['client', 'server']);
 
   api.add_files([
     'utils.js',
